@@ -11,19 +11,19 @@
          <h1>Employee Placement System</h1>
          <form id="csvForm" enctype="multipart/form-data">
              <div class="file-upload">
-                 <label for="employeeSkill">Upload Employee CSV:</label>
+                 <label for="employeeSkill">Upload Employee Skill CSV:</label>
                  <input type="file" id="employeeSkill" name="employeeSkill" accept=".csv" onchange="enableUploadButton('employeeSkill', 'uploadEmployeeButton')">
                  <button type="button" id="uploadEmployeeButton" onclick="handleFileUpload('employeeSkill')" disabled>Upload</button>
              </div>
             
              <div class="file-upload">
-                 <label for="workerRequirements">Upload Worker Requirements File:</label>
+                 <label for="workerRequirements">Upload Workers Required File:</label>
                  <input type="file" id="workerRequirements" name="workerRequirements" accept=".csv" onchange="enableUploadButton('workerRequirements', 'uploadWorkerButton')">
                  <button type="button" id="uploadWorkerButton" onclick="handleFileUpload('workerRequirements')" disabled>Upload</button>
              </div>
-
+             
              <div class="file-upload">
-                 <label for="shiftBasket">Upload Shift Basket File:</label>
+                 <label for="shiftBasket">Upload Optional Shifts File:</label>
                  <input type="file" id="shiftBasket" name="shiftBasket" accept=".csv" onchange="enableUploadButton('shiftBasket', 'uploadShiftButton')">
                  <button type="button" id="uploadShiftButton" onclick="handleFileUpload('shiftBasket')" disabled>Upload</button>
              </div>
