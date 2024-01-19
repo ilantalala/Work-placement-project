@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Employee Placement UI</title>
+     <link rel="stylesheet" href="inputCSV.css">
+</head>
+<body>
+     <div class="container">
+         <h1>Employee Placement System</h1>
+         <form id="csvForm" enctype="multipart/form-data">
+             <div class="file-upload">
+                 <label for="employeeSkill">Upload Employee Skill CSV:</label>
+                 <input type="file" id="employeeSkill" name="employeeSkill" accept=".csv" onchange="enableUploadButton('employeeSkill', 'uploadEmployeeButton')">
+                 <button type="button" id="uploadEmployeeButton" onclick="handleFileUpload('employeeSkill')" disabled>Upload</button>
+             </div>
+            
+             <div class="file-upload">
+                 <label for="workerRequirements">Upload Workers Required File:</label>
+                 <input type="file" id="workerRequirements" name="workerRequirements" accept=".csv" onchange="enableUploadButton('workerRequirements', 'uploadWorkerButton')">
+                 <button type="button" id="uploadWorkerButton" onclick="handleFileUpload('workerRequirements')" disabled>Upload</button>
+             </div>
+             
+             <div class="file-upload">
+                 <label for="shiftBasket">Upload Optional Shifts File:</label>
+                 <input type="file" id="shiftBasket" name="shiftBasket" accept=".csv" onchange="enableUploadButton('shiftBasket', 'uploadShiftButton')">
+                 <button type="button" id="uploadShiftButton" onclick="handleFileUpload('shiftBasket')" disabled>Upload</button>
+             </div>
+         </form>
+        
+         <div id="result"></div>
+     </div>
+     <script src="inputCSV.js"></script>
+</body>
+</html>
