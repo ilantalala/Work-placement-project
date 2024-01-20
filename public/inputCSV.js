@@ -1,3 +1,4 @@
+
 var uploadedFileCount = 0;
 
 // Function to handle file uploads
@@ -127,9 +128,15 @@ function displayPlacementScreen(placementData) {
     // Create a new HTML document
     const newDocument = document.implementation.createHTMLDocument('Placement Screen');
 
+    // Create a link element for the CSS file
+    const linkElement = newDocument.createElement('link');
+    linkElement.rel = 'stylesheet';
+    linkElement.href = 'placement.css';
+    newDocument.head.appendChild(linkElement);
+
     // Create a table element
     const table = newDocument.createElement('table');
-    table.border = '1';
+    table.classList.add('placement-table');
 
     // Create a header row
     const headerRow = table.insertRow();

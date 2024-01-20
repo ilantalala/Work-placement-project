@@ -1,0 +1,21 @@
+.placement-table {
+    width: 80%;
+    margin: auto;
+    border-collapse: collapse;
+}
+
+.placement-table th, .placement-table td {
+    border: 1px solid #dddddd;
+    padding: 8px;
+}
+
+.placement-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
