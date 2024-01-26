@@ -1,7 +1,6 @@
 import "./RegisterCard.css"
 import React, { useState } from "react";
-//import {  useNavigate } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
 
 function RegisterCard({ users, setUsers }) {
 
@@ -12,7 +11,7 @@ function RegisterCard({ users, setUsers }) {
   const [errorMessage, setErrorMessage] = useState('');
  
 
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -42,14 +41,13 @@ function RegisterCard({ users, setUsers }) {
       setErrorMessage('');
 
       // Redirect to login screen
-      //navigate('/');
+      navigate('/');
     }
   };
 
 
   return (
     <div className="container">
-      
 
         {errorMessage && <p>{errorMessage}</p>}
 
@@ -87,9 +85,9 @@ function RegisterCard({ users, setUsers }) {
 
           <button type="submit" className="btn btn-primary">Register</button>
           <br></br><br></br>
-          
-        </form>
+          <div>Already registered? <Link to="/">Click here</Link> to login</div>
 
+        </form>
     </div>
   );
 }
