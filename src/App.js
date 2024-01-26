@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import LoginCard from './LoginCard/LoginCard';
 import RegisterCard from './registerCard/RegisterCard';
+import InputCSV from './InputCsv/InputCSV';
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
       <Routes>
       <Route path="/" element={<LoginCard users={users} setCurrentUser={setCurrentUser} />} />
       <Route path="/register" element={<RegisterCard users={users} setUsers={setUsers} />} />
+      <Route path="/inputCSV" element={<InputCSV />} />
       </Routes>
 
     </BrowserRouter>

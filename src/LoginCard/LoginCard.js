@@ -32,7 +32,7 @@ function LoginCard({ users, setCurrentUser }) {
 
         // redirect to chatScreen {matchedUser}.
         setCurrentUser(matchedUser);
-        navigate('/register');
+        navigate('/inputCSV');
 
       } else {
         // Display login error message

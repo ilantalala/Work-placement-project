@@ -1,0 +1,31 @@
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.file-upload {
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.notification {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #2196f3;
+    color: #fff;
+    border-radius: 5px;
+}
