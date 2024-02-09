@@ -29,26 +29,57 @@ function InputCSV({ setPlacementData }) {
             setNotification('Please upload all three CSV files.');
         }
     };
-
+    const readCSVFile = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsText(file);
+            reader.onload = () => {
+                resolve(reader.result);
+            };
+            reader.onerror = () => {
+                reject(reader.error);
+            };
+        });
+    };
     // Function to handle placement logic
-    const handlePlacement = () => {
-
+    const handlePlacement = async () => {
         // Check if all files are uploaded before proceeding
         if (filesUploaded.employeeSkill && filesUploaded.workerRequirements && filesUploaded.shiftBasket) {
-            
-            // For demonstration, using dummy data
-            const dummyPlacementData =  [
-                { skill: 'Skill1', day: 'Monday', fromHour: '09:00', toHour: '12:00', numOfEmployees: 3 },
-                { skill: 'Skill2', day: 'Monday', fromHour: '10:00', toHour: '12:00', numOfEmployees: 5 },
-                { skill: 'Skill3', day: 'Monday', fromHour: '11:00', toHour: '14:00', numOfEmployees: 4 },
-                { skill: 'Skill4', day: 'Monday', fromHour: '12:00', toHour: '14:00', numOfEmployees: 5 },
-                { skill: 'Skill5', day: 'Monday', fromHour: '13:00', toHour: '16:00', numOfEmployees: 8 },
-                { skill: 'Skill6', day: 'Monday', fromHour: '14:00', toHour: '16:00', numOfEmployees: 1 },
-            ];
+            try {
+                // Read the contents of the files
+                const employeeSkillContent = await readCSVFile(employeeSkillFile);
+                const workerRequirementsContent = await readCSVFile(workerRequirementsFile);
+                const shiftBasketContent = await readCSVFile(shiftBasketFile);
 
-            setPlacementData(dummyPlacementData);
-            navigate('/placement-table');
+                // Send data to the server
+                const response = await fetch('http://localhost:5000/api/upload-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        employeeSkillContent,
+                        workerRequirementsContent,
+                        shiftBasketContent
+                    })
+                });
 
+                if (response.ok) {
+                    // If the response is successful, parse the response JSON
+                    const data = await response.json();
+                    console.log('Server response:', data);
+
+                    // Assuming the server response is an array of placement data
+                    setPlacementData(data);
+                    navigate('/placement-table');
+                } else {
+                    console.error('Error:', response.statusText);
+                    setNotification('Error uploading data to the server. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                setNotification('Error uploading data to the server. Please try again.');
+            }
         } else {
             setNotification('Please upload all three CSV files before placing employees.');
         }

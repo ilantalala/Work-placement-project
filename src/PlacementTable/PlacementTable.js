@@ -10,24 +10,24 @@ function PlacementTable({ placementData }) {
             {placementData && placementData.length > 0 ? (
                 <table>
                     <thead>
-                        <tr>
-                            <th>Skill</th>
-                            <th>Day</th>
-                            <th>From Hour</th>
-                            <th>To Hour</th>
-                            <th>Number of Employees</th>
-                        </tr>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Day</th>
+                        <th>From Hour</th>
+                        <th>To Hour</th>
+                        <th>Number of Employees</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {placementData.map((item, index) => (
-                            <tr key={index}>
-                                <td>{item.skill}</td>
-                                <td>{item.day}</td>
-                                <td>{item.fromHour}</td>
-                                <td>{item.toHour}</td>
-                                <td>{item.numOfEmployees}</td>
-                            </tr>
-                        ))}
+                    {placementData.map((item, index) => (
+                        <tr key={index}>
+                            <td>{item.skill}</td>
+                            <td>{item.day}</td>
+                            <td>{item.start}</td>
+                            <td>{item.end}</td>
+                            <td>{item.number_of_employ}</td>
+                        </tr>
+                    ))}
                     </tbody>
                 </table>
             ) : (

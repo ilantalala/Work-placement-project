@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 
 function LoginCard({ users, setCurrentUser }) {
-
+  users=[{username:"ilan",password:"12345678"}]
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -21,11 +21,11 @@ function LoginCard({ users, setCurrentUser }) {
 
       // Check if the username and password match any registered user
       const matchedUser = users.find(
-        (user) => user.username === username && user.password === password
+          (user) => user.username === username && user.password === password
       );
 
       if (matchedUser) {
-        
+
         setUsername('');
         setPassword('');
         setErrorMessage('');
@@ -43,8 +43,8 @@ function LoginCard({ users, setCurrentUser }) {
 
   return (
 
-    <div className="container">
-      <h1>Wellcome!</h1>
+      <div className="container">
+        <h1>Wellcome!</h1>
 
         {errorMessage && <p>{errorMessage}</p>}
 
@@ -52,14 +52,14 @@ function LoginCard({ users, setCurrentUser }) {
 
           <div className="form-group">
             <input type="text" className="form-control" placeholder="Enter username..." id="username"
-              value={username} onChange={(e) => setUsername(e.target.value)}></input>
+                   value={username} onChange={(e) => setUsername(e.target.value)}></input>
           </div>
 
           <br></br>
 
           <div className="form-group">
             <input type="password" className="form-control" placeholder="Enter password..." id="password"
-              value={password} onChange={(e) => setPassword(e.target.value)}></input>
+                   value={password} onChange={(e) => setPassword(e.target.value)}></input>
           </div>
 
           <br></br>
@@ -71,7 +71,7 @@ function LoginCard({ users, setCurrentUser }) {
 
         </form>
 
-    </div>
+      </div>
   );
 }
 

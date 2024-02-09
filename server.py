@@ -1,15 +1,32 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from datetime import datetime, time
+from datetime import datetime
+import math
 
 app = Flask(__name__)
 CORS(app)
 
+# Set the upload folder to store files
+app.config['UPLOAD_FOLDER'] = 'uploads'
+
+def polish(data):
+    def remove_r(text):
+        return text.replace("\r", "")
+
+    polished_data = []
+    for item in data:
+        polished_item = {}
+        for key, value in item.items():
+            polished_key = remove_r(key)
+            polished_value = remove_r(value)
+            polished_item[polished_key] = polished_value
+        polished_data.append(polished_item)
+    return polished_data
 
 def filter_schedules_by_time(schedules, skill, day, start, end):
     filtered_schedules = []
-    time_format = "%H:%M"  # Define the time format
 
+    time_format = "%H:%M"  # Define the time format
     for schedule in schedules:
         schedule_skill = schedule["skill"]
         schedule_day = schedule["day"]
@@ -21,25 +38,19 @@ def filter_schedules_by_time(schedules, skill, day, start, end):
 
         start_time = datetime.strptime(start, time_format).time()
         end_time = datetime.strptime(end, time_format).time()
-
         if (
-            schedule_skill == skill
-            and schedule_day == day
-            and start_time <= time_start <= end_time
-            and start_time <= time_end <= end_time
+                schedule_skill == skill
+                and schedule_day == day
+                and start_time <= time_start <= end_time
+                and start_time <= time_end <= end_time
         ):
             filtered_schedules.append(schedule)
 
     return filtered_schedules
 
-
-@app.route('/api/calculate-average', methods=['POST'])
-def calculate_average():
+def calculate_average(schedules, time_ranges):
     try:
-        schedules = request.json.get('schedules', [])
-        time_ranges = request.json.get('employ_data', [])
         new_array = []
-
         for shift in time_ranges:
             start = shift["start_time"]
             end = shift["end_time"]
@@ -54,15 +65,66 @@ def calculate_average():
                 sum += int(schedule["number_of_employ"])
 
             if counter > 0:
-                new_array.append({"skill": skill, "day": day, "start": start, "end": end, "number_of_employ": (sum / counter)})
+                new_array.append({"skill": skill, "day": day, "start": start, "end": end, "number_of_employ": math.ceil(sum / counter)})
 
-        response = {"time_ranges": new_array}
-        print(new_array)
-        return jsonify(response)
+        return new_array
 
     except Exception as e:
-        return jsonify({"error": str(e)})
+        return {"error": str(e)}
+def process_csv_content(csv_content):
+    try:
+        # Split the content into lines
+        lines = csv_content.strip().split('\n')
+
+        # Extract headers from the first line
+        headers = [header.strip() for header in lines[0].split(',')]
+
+        # Process data from subsequent lines
+        data = []
+        for line in lines[1:]:
+            values = [value.strip() for value in line.split(',')]
+
+            # Create a dictionary using headers as keys and values as values
+            entry = {headers[i]: values[i] for i in range(len(headers))}
+            data.append(entry)
+
+        return data
+
+    except Exception as e:
+        print("Error processing CSV content:", e)
+        return []  # Return an empty list in case of an error
+
+@app.route('/api/upload-data', methods=['POST'])
+def upload_data():
+    try:
+        # Get JSON data from the request
+        data = request.get_json()
+
+        # Access data fields
+        employee_skill_content = data.get('employeeSkillContent')
+        worker_requirements_content = data.get('workerRequirementsContent')
+        shift_basket_content = data.get('shiftBasketContent')
+
+        if None in [employee_skill_content, worker_requirements_content, shift_basket_content]:
+            return jsonify({"error": "Missing required data in the request"}), 400
+
+        # Process CSV-like content and create arrays of JSON objects
+        employee_skill_data = process_csv_content(employee_skill_content)
+        worker_requirements_data = process_csv_content(worker_requirements_content)
+        shift_basket_data = process_csv_content(shift_basket_content)
+
+        # Polish the data
+        worker_requirements_data = polish(worker_requirements_data)
+        shift_basket_data = polish(shift_basket_data)
+
+        # Calculate average and return the result
+        final_table = calculate_average(shift_basket_data, worker_requirements_data)
+        return jsonify(final_table), 200
+
+    except Exception as e:
+        print("Error details:", e)
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
