@@ -118,7 +118,7 @@ def upload_data():
         shift_basket_data = polish(shift_basket_data)
 
         # Calculate average and return the result
-        final_table = calculate_average(shift_basket_data, worker_requirements_data)
+        final_table = calculate_average(worker_requirements_data,shift_basket_data)
         return jsonify(final_table), 200
 
     except Exception as e:
