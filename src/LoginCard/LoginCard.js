@@ -11,32 +11,33 @@ function LoginCard({ users, setCurrentUser }) {
   const navigate = useNavigate();
 
 
-  const handleSubmit = (e) => {
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!username || !password) {
       setErrorMessage('Please fill all fields.');
     } else {
+      try {
+        const response = await fetch('http://localhost:5000/api/login', { // Change this URL
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        });
 
-      // Check if the username and password match any registered user
-      const matchedUser = users.find(
-          (user) => user.username === username && user.password === password
-      );
-
-      if (matchedUser) {
-
-        setUsername('');
-        setPassword('');
-        setErrorMessage('');
-
-        // redirect to chatScreen {matchedUser}.
-        setCurrentUser(matchedUser);
-        navigate('/inputCSV');
-
-      } else {
-        // Display login error message
-        setErrorMessage('Invalid username or password.');
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem('token', data.token);
+          setCurrentUser(username);
+          navigate('/inputCSV');
+        } else {
+          const data = await response.json();
+          setErrorMessage(data.message);
+        }
+      } catch (error) {
+        console.error('Error logging in:', error);
+        setErrorMessage('An error occurred while logging in. Please try again.');
       }
     }
   };
