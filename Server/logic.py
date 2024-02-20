@@ -1,13 +1,63 @@
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from datetime import datetime
 import math
+from flask import jsonify, request
+from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
+from datetime import datetime, timedelta
+from models import User
 
-app = Flask(__name__)
-CORS(app)
+SECRET_KEY = 'hiiiihiiii'
 
-# Set the upload folder to store files
-app.config['UPLOAD_FOLDER'] = 'uploads'
+def register():
+    try:
+        data = request.json
+        username = data.get('username')
+        password = data.get('password')
+
+        if not username or not password:
+            return jsonify({'error': 'Username and password are required'}), 400
+
+        user = User()
+
+        if user.create_user(username, password):
+            return jsonify({'message': 'User registered successfully'}), 201
+        else:
+            return jsonify({'error': 'Failed to register user'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+def login():
+    try:
+        data = request.json
+        username = data.get('username')
+        password = data.get('password')
+
+        if not username or not password:
+            return jsonify({'error': 'Username and password are required'}), 400
+
+        user = User()
+        user_data = user.find_user(username)
+
+        if user_data and check_password_hash(user_data.get('password'), password):
+            return jsonify({'message': 'Login successful'}), 200
+        else:
+            return jsonify({'error': 'Invalid username or password'}), 401
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+def verify_token():
+    try:
+        token = request.headers.get('Authorization')
+
+        if not token:
+            return jsonify({'error': 'Token is missing'}), 401
+
+        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        return jsonify({'message': 'Token is valid', 'username': decoded_token.get('username')}), 200
+    except jwt.ExpiredSignatureError:
+        return jsonify({'error': 'Token has expired'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'error': 'Invalid token'}), 401
+
 
 def polish(data):
     def remove_r(text):
@@ -71,6 +121,7 @@ def calculate_average(schedules, time_ranges):
 
     except Exception as e:
         return {"error": str(e)}
+
 def process_csv_content(csv_content):
     try:
         # Split the content into lines
@@ -94,7 +145,6 @@ def process_csv_content(csv_content):
         print("Error processing CSV content:", e)
         return []  # Return an empty list in case of an error
 
-@app.route('/api/upload-data', methods=['POST'])
 def upload_data():
     try:
         # Get JSON data from the request
@@ -124,7 +174,3 @@ def upload_data():
     except Exception as e:
         print("Error details:", e)
         return jsonify({"error": str(e)}), 500
-
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)

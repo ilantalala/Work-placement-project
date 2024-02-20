@@ -13,9 +13,9 @@ function RegisterCard({ users, setUsers }) {
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     // Perform validation checks
     if (!username || !password || !confirmPassword || !displayName) {
       setErrorMessage('Please fill all the fields.');
@@ -26,24 +26,29 @@ function RegisterCard({ users, setUsers }) {
     } else if (!/\d/.test(password) || !/[a-zA-Z]/.test(password)) {
       setErrorMessage('Password should contain both letters and digits.');
     } else {
-
-      // creates a new user and add him to users
-      const newUser = { username: username, password: password, displayName: displayName }
-      console.log(newUser);
-
-      setUsers([...users, newUser]);
-      console.log(users);
-
-      setUsername('');
-      setPassword('');
-      setConfirmPassword('');
-      setDisplayName('');
-      setErrorMessage('');
-
-      // Redirect to login screen
-      navigate('/');
+      try {
+        const response = await fetch('http://localhost:5000/api/register', { // Change this URL
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password, displayName }),
+        });
+  
+        if (response.ok) {
+          // Registration successful, redirect to login screen
+          navigate('/');
+        } else {
+          // Registration failed, display error message
+          const data = await response.json();
+          setErrorMessage(data.message);
+        }
+      } catch (error) {
+        console.error('Error registering user:', error);
+        setErrorMessage('An error occurred while registering. Please try again.');
+      }
     }
-  };
+  };  
 
 
   return (
