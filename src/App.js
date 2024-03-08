@@ -6,12 +6,14 @@ import LoginCard from './LoginCard/LoginCard';
 import RegisterCard from './registerCard/RegisterCard';
 import InputCSV from './InputCsv/InputCSV';
 import PlacementTable from './PlacementTable/PlacementTable';
+import WorkerRequirementsChart from './WorkerRequirementsChart/WorkerRequirementsChart';
 
 function App() {
 
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [placementData, setPlacementData] = useState(null);
+  const [workerRequirementsData, setWorkerRequirementsData] = useState(null);
 
   return (
 
@@ -24,8 +26,9 @@ function App() {
       <Route path="/register" element={<RegisterCard users={users} setUsers={setUsers} />} />
       <Route path="/inputCSV" element={<InputCSV setPlacementData={setPlacementData}/>} />
       <Route path="/placement-table" element={<PlacementTable placementData={placementData} />} />
+      <Route path="/worker-requirements-chart" element={<WorkerRequirementsChart workerRequirementsData={workerRequirementsData} placementData={placementData} />} />
       </Routes>
-
+      
     </BrowserRouter>
 
   );
