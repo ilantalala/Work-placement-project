@@ -24,7 +24,7 @@ function App() {
       <Routes>
       <Route path="/" element={<LoginCard users={users} setCurrentUser={setCurrentUser} />} />
       <Route path="/register" element={<RegisterCard users={users} setUsers={setUsers} />} />
-      <Route path="/inputCSV" element={<InputCSV setPlacementData={setPlacementData}/>} />
+      <Route path="/inputCSV" element={<InputCSV setPlacementData={setPlacementData} setWorkerRequirementsData={setWorkerRequirementsData}/>} />
       <Route path="/placement-table" element={<PlacementTable placementData={placementData} />} />
       <Route path="/worker-requirements-chart" element={<WorkerRequirementsChart workerRequirementsData={workerRequirementsData} placementData={placementData} />} />
       </Routes>
