@@ -51,7 +51,7 @@ function InputCSV({ setPlacementData,setWorkerRequirementsData }) {
                 const employeeSkillContent = await readCSVFile(employeeSkillFile);
                 const workerRequirementsContent = await readCSVFile(workerRequirementsFile);
                 const shiftBasketContent = await readCSVFile(shiftBasketFile);
-                const parsedWorkerRequirements = Papa.parse(workerRequirementsContent, { header: true }).data;
+                const parsedWorkerRequirements = Papa.parse(workerRequirementsContent, { header: true,skipEmptyLines:true }).data;
                 setWorkerRequirementsData(parsedWorkerRequirements);
 
                 // Send data to the server
