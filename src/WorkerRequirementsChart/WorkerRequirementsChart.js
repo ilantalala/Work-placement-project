@@ -1,9 +1,10 @@
-import React, { useEffect, useRef,useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Chart from 'chart.js/auto';
 
 function padTime(time) {
   return time.padStart(5, "0")
 }
+
 function textToColor(text) {
   let hash = 0;
   text.split('').forEach(char => {
@@ -39,6 +40,7 @@ function getWorkerRequirementsGraphData(workerRequirementsData) {
 
   return { data };
 }
+
 function getGraphData(dataFromCsv) {
   const datasetsPerSkill = {};
 
@@ -70,6 +72,7 @@ function getGraphData(dataFromCsv) {
 function WorkerRequirementsChart({ workerRequirementsData, placementData }) {
   const chartContainerRef = useRef(null);
   const chartInstanceRef = useRef(null);
+  const [selectedDay, setSelectedDay] = useState('Sunday'); // State to track the selected day
   console.table(workerRequirementsData);
   console.table(placementData);
 
@@ -77,18 +80,35 @@ function WorkerRequirementsChart({ workerRequirementsData, placementData }) {
     if (workerRequirementsData.length > 0 && placementData.length > 0) {
       createChart();
     }
-  }, [workerRequirementsData, placementData]);
+  }, [workerRequirementsData, placementData,selectedDay]);
 
   const createChart = () => {
-    const { data } = getWorkerRequirementsGraphData(workerRequirementsData.filter(row => row.day === selectedDay));
-    const { datasets } = getGraphData(placementData.filter(row => row.day === selectedDay));
-    console.log(datasets);
+    // const { data } = getWorkerRequirementsGraphData(workerRequirementsData.filter(row => row.day === selectedDay));
+    // const { datasets } = getGraphData(placementData.filter(row => row.day === selectedDay));
+    // console.log(datasets);
+    // if (chartInstanceRef.current) {
+    //   chartInstanceRef.current.destroy();
+    // }
+
+    // // Ensure chart container reference exists
+    // if (!chartContainerRef.current) return;
+
+    // Filter workerRequirementsData and placementData based on the selected day
+    const filteredWorkerRequirementsData = workerRequirementsData.filter(row => row.day === selectedDay);
+    const filteredPlacementData = placementData.filter(row => row.day === selectedDay);
+
+    // Get the graph data for the filtered data
+    const { data } = getWorkerRequirementsGraphData(filteredWorkerRequirementsData);
+    const { datasets } = getGraphData(filteredPlacementData);
+
+    // Destroy the current chart instance if it exists
     if (chartInstanceRef.current) {
       chartInstanceRef.current.destroy();
     }
 
     // Ensure chart container reference exists
     if (!chartContainerRef.current) return;
+
 
     // Create a new Chart.js chart with the extracted data
     const ctx = chartContainerRef.current.getContext('2d');
@@ -128,8 +148,6 @@ function WorkerRequirementsChart({ workerRequirementsData, placementData }) {
     });
   };
 
-  const [selectedDay, setSelectedDay] = useState('Sunday'); // State to track the selected day
-
   // Handler for when the selected day changes
   const handleDayChange = (event) => {
     setSelectedDay(event.target.value);
@@ -151,5 +169,3 @@ function WorkerRequirementsChart({ workerRequirementsData, placementData }) {
 }
 
 export default WorkerRequirementsChart;
-
-
