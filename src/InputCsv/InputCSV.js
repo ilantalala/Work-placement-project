@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logout from '../Logout/Logout';
 import './InputCSV.css';
+import Papa from 'papaparse'; 
 
-function InputCSV({ setPlacementData }) {
+function InputCSV({ setPlacementData,setWorkerRequirementsData }) {
     const navigate = useNavigate();
     const [employeeSkillFile, setEmployeeSkillFile] = useState(null);
     const [workerRequirementsFile, setWorkerRequirementsFile] = useState(null);
@@ -50,6 +51,8 @@ function InputCSV({ setPlacementData }) {
                 const employeeSkillContent = await readCSVFile(employeeSkillFile);
                 const workerRequirementsContent = await readCSVFile(workerRequirementsFile);
                 const shiftBasketContent = await readCSVFile(shiftBasketFile);
+                const parsedWorkerRequirements = Papa.parse(workerRequirementsContent, { header: true,skipEmptyLines:true }).data;
+                setWorkerRequirementsData(parsedWorkerRequirements);
 
                 // Send data to the server
                 const response = await fetch('http://localhost:5000/api/upload-data', {
