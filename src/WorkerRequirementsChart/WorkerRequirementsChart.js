@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef,useState } from 'react';
 import Chart from 'chart.js/auto';
 
 function padTime(time) {
   return time.padStart(5, "0")
 }
-
 function textToColor(text) {
   let hash = 0;
   text.split('').forEach(char => {
@@ -17,8 +16,7 @@ function textToColor(text) {
   }
   return colour
 }
-// range(0,24)
-// (24) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+// range[0,24)
 function range(from, untilInclusive) {
   const rangeSize = untilInclusive - from;
   return new Array(rangeSize).fill(from).map((item, index) => item + index);
@@ -29,88 +27,91 @@ const timeLabels = range(0, 24).flatMap(item => [padTime(`${item}:00`), padTime(
 // map [["00:00", "00:30"], ["01:00", "01:30"], ["02:00", "02:30"], ..., ["23:00", "23:30"]]
 // flatMap ["00:00", "00:30", "01:00", "01:30", "02:00", "02:30", ..., "23:00", "23:30"]
 
-function getWorkerRequirementsGraphData(workerRequirementsData) {
-  const data = new Array(timeLabels.length).fill(0);
 
-  workerRequirementsData.forEach((current) => {
+function getWorkerRequirementsGraphData(workerRequirementsData, selectedDay, selectedSkill) {
+
+  const filteredData = workerRequirementsData.filter(row => row.day == selectedDay && row.skill == selectedSkill);
+  console.log(filteredData);
+  const data = new Array(timeLabels.length).fill(0);
+  console.log(data);
+  filteredData.forEach((current) => {
     const index = timeLabels.indexOf(padTime(current.start_time));
-    console.log({ index })
     data[index] += parseInt(current.number_of_employ);
   });
 
   return { data };
 }
 
-function getGraphData(dataFromCsv) {
+function getGraphData(dataFromCsv, selectedDay, selectedSkills) {
   const datasetsPerSkill = {};
 
   dataFromCsv.forEach((row) => {
     const { start, end, skill, number_of_employ, day } = row;
 
-    datasetsPerSkill[skill] ||= {
-      label: skill,
-      // when first encountering this skill, there is no y data yet so:
-      // [0, 0, 0, 0] y
-      // in parallel to ["07:00", "07:30", "8:00", "8:30"] x
-      data: new Array(timeLabels.length).fill(0),
-      backgroundColor: textToColor(skill),
-      type: "bar"
-    }
+    if (selectedSkills.length === 0 || selectedSkills.includes(skill)) {
+      if (day === selectedDay) {
+        datasetsPerSkill[skill] ||= {
+          label: skill,
+          data: new Array(timeLabels.length).fill(0),
+          backgroundColor: textToColor(skill),
+          type: "bar"
+        };
 
-    // for each time (07:00, 07:30, 08:00, 08:30)
-    timeLabels.forEach((timeLabel, timeLabelIndex) => {
-      if (padTime(start) <= timeLabel &&
-        padTime(end) >= timeLabel) {
-        datasetsPerSkill[skill].data[timeLabelIndex] += number_of_employ
+        timeLabels.forEach((timeLabel, timeLabelIndex) => {
+          if (padTime(start) <= timeLabel && padTime(end) >= timeLabel) {
+            datasetsPerSkill[skill].data[timeLabelIndex] += number_of_employ;
+          }
+        });
       }
-    })
+    }
   });
 
   return { datasets: Object.values(datasetsPerSkill) };
 }
 
+
 function WorkerRequirementsChart({ workerRequirementsData, placementData }) {
   const chartContainerRef = useRef(null);
   const chartInstanceRef = useRef(null);
-  const [selectedDay, setSelectedDay] = useState('Sunday'); // State to track the selected day
-  console.table(workerRequirementsData);
-  console.table(placementData);
+  const [selectedDay, setSelectedDay] = useState('Sunday');
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [allSkills, setAllSkills] = useState([]);
+
+  // Update allSkills when placementData changes or selectedDay changes
+  useEffect(() => {
+    if (placementData.length > 0) {
+      const filteredSkills = [...new Set(placementData.filter(row => row.day === selectedDay).map(row => row.skill))];
+      setAllSkills(filteredSkills);
+    }
+  }, [placementData, selectedDay]);
+
+  // Watch for changes in selectedDay
+  const handleDayChange = (event) => {
+    setSelectedDay(event.target.value);
+  };
+
+  // Watch for changes in selected skills
+  const handleSkillChange = (event) => {
+    const selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
+    setSelectedSkills(selectedOptions);
+  };
 
   useEffect(() => {
     if (workerRequirementsData.length > 0 && placementData.length > 0) {
       createChart();
     }
-  }, [workerRequirementsData, placementData,selectedDay]);
+  }, [workerRequirementsData, placementData, selectedDay, selectedSkills]);
 
   const createChart = () => {
-    // const { data } = getWorkerRequirementsGraphData(workerRequirementsData.filter(row => row.day === selectedDay));
-    // const { datasets } = getGraphData(placementData.filter(row => row.day === selectedDay));
-    // console.log(datasets);
-    // if (chartInstanceRef.current) {
-    //   chartInstanceRef.current.destroy();
-    // }
+    const { data } = getWorkerRequirementsGraphData(workerRequirementsData, selectedDay, selectedSkills);
+    const { datasets } = getGraphData(placementData, selectedDay, selectedSkills);
 
-    // // Ensure chart container reference exists
-    // if (!chartContainerRef.current) return;
-
-    // Filter workerRequirementsData and placementData based on the selected day
-    const filteredWorkerRequirementsData = workerRequirementsData.filter(row => row.day === selectedDay);
-    const filteredPlacementData = placementData.filter(row => row.day === selectedDay);
-
-    // Get the graph data for the filtered data
-    const { data } = getWorkerRequirementsGraphData(filteredWorkerRequirementsData);
-    const { datasets } = getGraphData(filteredPlacementData);
-
-    // Destroy the current chart instance if it exists
     if (chartInstanceRef.current) {
       chartInstanceRef.current.destroy();
     }
 
-    // Ensure chart container reference exists
     if (!chartContainerRef.current) return;
 
-
-    // Create a new Chart.js chart with the extracted data
     const ctx = chartContainerRef.current.getContext('2d');
     chartInstanceRef.current = new Chart(ctx, {
       data: {
@@ -133,39 +134,48 @@ function WorkerRequirementsChart({ workerRequirementsData, placementData }) {
             title: {
               display: true,
               text: 'Hours of the Day'
-            }
-            , stacked: true
+            },
+            stacked: true
           },
           y: {
             title: {
               display: true,
               text: 'Number of Employees'
-            }
-            , stacked: true,
+            },
+            stacked: true
           }
         }
       }
     });
   };
-
-  // Handler for when the selected day changes
-  const handleDayChange = (event) => {
-    setSelectedDay(event.target.value);
-  };
+  
   return (
     <div>
       <h1>Worker Requirements Chart</h1>
-      <select value={selectedDay} onChange={handleDayChange}>
-        <option value="Sunday">Sunday</option>
-        <option value="Monday">Monday</option>
-        <option value="Tuesday">Tuesday</option>
-        <option value="Wednesday">Wednesday</option>
-        <option value="Thursday">Thursday</option>
-        <option value="Friday">Friday</option>
-        <option value="Saturday">Saturday</option>
-      </select>
+      <div>
+        <label htmlFor="day">Select Day: </label>
+        <select value={selectedDay} onChange={handleDayChange}>
+          <option value="Sunday">Sunday</option>
+          <option value="Monday">Monday</option>
+          <option value="Tuesday">Tuesday</option>
+          <option value="Wednesday">Wednesday</option>
+          <option value="Thursday">Thursday</option>
+          <option value="Friday">Friday</option>
+          <option value="Saturday">Saturday</option>
+        </select>
+      </div>
+      <div>
+        <label htmlFor="skills">Select Skills: </label>
+        <select value={selectedSkills} onChange={handleSkillChange}>
+        {allSkills.map((skill, index) => (
+        <option key={index} value={skill}>{skill}</option>
+        ))}
+        </select>
+      </div>
       <canvas ref={chartContainerRef} id="worker-requirements-chart" width="800" height="400"></canvas>
-    </div>)
+    </div>
+  );
+  
 }
 
 export default WorkerRequirementsChart;
