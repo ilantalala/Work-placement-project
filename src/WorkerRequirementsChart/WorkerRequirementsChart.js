@@ -29,11 +29,8 @@ const timeLabels = range(0, 24).flatMap(item => [padTime(`${item}:00`), padTime(
 
 
 function getWorkerRequirementsGraphData(workerRequirementsData, selectedDay, selectedSkill) {
-
   const filteredData = workerRequirementsData.filter(row => row.day == selectedDay && row.skill == selectedSkill);
-  console.log(filteredData);
   const data = new Array(timeLabels.length).fill(0);
-  console.log(data);
   filteredData.forEach((current) => {
     const index = timeLabels.indexOf(padTime(current.start_time));
     data[index] += parseInt(current.number_of_employ);
