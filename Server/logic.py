@@ -3,7 +3,7 @@ from flask import jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 from datetime import datetime, timedelta
-from models import User
+from models import User,Tables
 
 SECRET_KEY = 'hiiiihiiii'
 
@@ -147,28 +147,35 @@ def process_csv_content(csv_content):
 
 def upload_data():
     try:
+        tables = Tables()
+
         # Get JSON data from the request
         data = request.get_json()
-
         # Access data fields
+        currentUser = data.get('CurrentUser')
         employee_skill_content = data.get('employeeSkillContent')
         worker_requirements_content = data.get('workerRequirementsContent')
         shift_basket_content = data.get('shiftBasketContent')
 
         if None in [employee_skill_content, worker_requirements_content, shift_basket_content]:
             return jsonify({"error": "Missing required data in the request"}), 400
-
         # Process CSV-like content and create arrays of JSON objects
         employee_skill_data = process_csv_content(employee_skill_content)
         worker_requirements_data = process_csv_content(worker_requirements_content)
         shift_basket_data = process_csv_content(shift_basket_content)
 
         # Polish the data
+        employee_skill_data = polish(employee_skill_data)
         worker_requirements_data = polish(worker_requirements_data)
         shift_basket_data = polish(shift_basket_data)
 
+        if tables.create_tables(currentUser, employee_skill_data, worker_requirements_data, shift_basket_data):
+            print('tables saved successfully')
+        else:
+           print('error : Failed to create tables')
+
         # Calculate average and return the result
-        final_table = calculate_average(worker_requirements_data,shift_basket_data)
+        final_table = calculate_average(worker_requirements_data, shift_basket_data)
         return jsonify(final_table), 200
 
     except Exception as e:

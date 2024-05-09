@@ -1,33 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logout from '../Logout/Logout';
 import './InputCSV.css';
 import Papa from 'papaparse'; 
 
-function InputCSV({ setPlacementData,setWorkerRequirementsData }) {
+function InputCSV({ setPlacementData,setWorkerRequirementsData,CurrentUser}) {
     const navigate = useNavigate();
-    const [employeeSkillFile, setEmployeeSkillFile] = useState(null);
-    const [workerRequirementsFile, setWorkerRequirementsFile] = useState(null);
-    const [shiftBasketFile, setShiftBasketFile] = useState(null);
+    useEffect(() => {
+    }, [CurrentUser]);
+    const [employeeSkill, setEmployeeSkill] = useState(null);
+    const [workerRequirements, setWorkerRequirements] = useState(null);
+    const [shiftBasket, setShiftBasket] = useState(null);
     const [notification, setNotification] = useState('');
-    const [filesUploaded, setFilesUploaded] = useState({
-        employeeSkill: false,
-        workerRequirements: false,
-        shiftBasket: false,
+    const [filesUploadedEmployeeSkill, setFilesUploadedEmployeeSkill] = useState({
+        employeeSkill: false
     });
+    const [filesUploadedWorkerRequirements, setFilesUploadedWorkerRequirements] = useState({
+        workerRequirements: false
+    });
+    const [filesUploadedShiftBasket, setFilesUploadedShiftBasket] = useState({
+        shiftBasket: false
+    });
+     
 
-    const handleFileUpload = () => {
+    const handleFileUploadEmployeeSkill = () => {
         // Check if all three files are uploaded
-        if (employeeSkillFile && workerRequirementsFile && shiftBasketFile) {
+        if (employeeSkill) {
             // Perform any action or display notification
             setNotification('CSV files uploaded successfully!');
-            setFilesUploaded({
-                employeeSkill: true,
-                workerRequirements: true,
-                shiftBasket: true,
-            });
+            setFilesUploadedEmployeeSkill({ employeeSkill: true})
         } else {
-            setNotification('Please upload all three CSV files.');
+            setNotification('Please upload employeeSkill CSV file.');
+        }
+    };
+    const handleFileUploadWorkerRequirements = () => {
+        // Check if all three files are uploaded
+        if (workerRequirements) {
+            // Perform any action or display notification
+            setNotification('CSV files uploaded successfully!');
+            setFilesUploadedWorkerRequirements({ workerRequirements: true})
+        } else {
+            setNotification('Please upload workerRequirements CSV file.');
+        }
+    };
+    const handleFilesUploadedShiftBasket = () => {
+        // Check if all three files are uploaded
+        if (shiftBasket) {
+            // Perform any action or display notification
+            setNotification('CSV files uploaded successfully!');
+            setFilesUploadedShiftBasket({ shiftBasket: true})
+        } else {
+            setNotification('Please upload workerRequirements CSV file.');
         }
     };
     const readCSVFile = (file) => {
@@ -45,12 +68,12 @@ function InputCSV({ setPlacementData,setWorkerRequirementsData }) {
     // Function to handle placement logic
     const handlePlacement = async () => {
         // Check if all files are uploaded before proceeding
-        if (filesUploaded.employeeSkill && filesUploaded.workerRequirements && filesUploaded.shiftBasket) {
+        if (filesUploadedEmployeeSkill && filesUploadedWorkerRequirements && filesUploadedShiftBasket) {
             try {
                 // Read the contents of the files
-                const employeeSkillContent = await readCSVFile(employeeSkillFile);
-                const workerRequirementsContent = await readCSVFile(workerRequirementsFile);
-                const shiftBasketContent = await readCSVFile(shiftBasketFile);
+                const employeeSkillContent = await readCSVFile(employeeSkill);
+                const workerRequirementsContent = await readCSVFile(workerRequirements);
+                const shiftBasketContent = await readCSVFile(shiftBasket);
                 const parsedWorkerRequirements = Papa.parse(workerRequirementsContent, { header: true,skipEmptyLines:true }).data;
                 setWorkerRequirementsData(parsedWorkerRequirements);
 
@@ -61,6 +84,7 @@ function InputCSV({ setPlacementData,setWorkerRequirementsData }) {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        CurrentUser,
                         employeeSkillContent,
                         workerRequirementsContent,
                         shiftBasketContent
@@ -87,7 +111,7 @@ function InputCSV({ setPlacementData,setWorkerRequirementsData }) {
             setNotification('Please upload all three CSV files before placing employees.');
         }
     };
-
+    console.log(filesUploadedEmployeeSkill)
     return (
         <>
             <Logout />
@@ -103,12 +127,14 @@ function InputCSV({ setPlacementData,setWorkerRequirementsData }) {
                             name="employeeSkill"
                             accept=".csv"
                             onChange={(e) => {
-                                setEmployeeSkillFile(e.target.files[0]);
-                                setFilesUploaded({ ...filesUploaded, employeeSkill: true });
+                                setEmployeeSkill(e.target.files[0]);
+                                setFilesUploadedEmployeeSkill({ ...filesUploadedEmployeeSkill, employeeSkill: true });
                             }}
                         />
                     </div>
-
+                    <button type="button" onClick={handleFileUploadEmployeeSkill}>
+                        Upload employeeSkill table
+                    </button>
                     <div className="file-upload">
                         <label htmlFor="workerRequirements">Upload Workers Required File:</label>
                         <input
@@ -117,12 +143,14 @@ function InputCSV({ setPlacementData,setWorkerRequirementsData }) {
                             name="workerRequirements"
                             accept=".csv"
                             onChange={(e) => {
-                                setWorkerRequirementsFile(e.target.files[0]);
-                                setFilesUploaded({ ...filesUploaded, workerRequirements: true });
+                                setWorkerRequirements(e.target.files[0]);
+                                setFilesUploadedWorkerRequirements({ ...filesUploadedWorkerRequirements, workerRequirements: true });
                             }}
                         />
                     </div>
-
+                    <button type="button" onClick={handleFileUploadWorkerRequirements}>
+                        Upload workerRequirements table
+                    </button>
                     <div className="file-upload">
                         <label htmlFor="shiftBasket">Upload Optional Shifts File:</label>
                         <input
@@ -131,22 +159,23 @@ function InputCSV({ setPlacementData,setWorkerRequirementsData }) {
                             name="shiftBasket"
                             accept=".csv"
                             onChange={(e) => {
-                                setShiftBasketFile(e.target.files[0]);
-                                setFilesUploaded({ ...filesUploaded, shiftBasket: true });
+                                setShiftBasket(e.target.files[0]);
+                                setFilesUploadedShiftBasket({ ...filesUploadedShiftBasket, shiftBasket: true });
                             }}
                         />
                     </div>
 
-                    <button type="button" onClick={handleFileUpload}>
-                        Upload CSV files
+                    <button type="button" onClick={handleFilesUploadedShiftBasket}>
+                        Upload shiftBasket table
                     </button>
-
                     {notification && <div>{notification}</div>}
                 </form>
                 <br></br>
-                {filesUploaded.employeeSkill && filesUploaded.workerRequirements && filesUploaded.shiftBasket && (
-                    <button onClick={handlePlacement}>Place Employees</button>
-                )}
+                {(filesUploadedEmployeeSkill.employeeSkill && 
+                    filesUploadedWorkerRequirements.workerRequirements && 
+                    filesUploadedShiftBasket.shiftBasket) && (
+                <button onClick={handlePlacement}>Place Employees</button>
+)}
             </div>
         </>
     );

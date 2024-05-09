@@ -2,34 +2,37 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 
-function LoginCard({ users, setCurrentUser }) {
-  users=[{username:"ilan",password:"12345678"}]
+function LoginCard({setCurrentUser,CurrentUser}) {
+  console.log("Props in LoginCard:", setCurrentUser);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
+  
   const navigate = useNavigate();
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log("Username:", username); // Check if username is set correctly
+    console.log("Password:", password); // Check if password is set correctly
+  
     if (!username || !password) {
       setErrorMessage('Please fill all fields.');
     } else {
       try {
-        const response = await fetch('http://localhost:5000/api/login', { // Change this URL
+        const response = await fetch('http://localhost:5000/api/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ username, password }),
         });
-
+  
         if (response.ok) {
           const data = await response.json();
           localStorage.setItem('token', data.token);
-          setCurrentUser(username);
+          setCurrentUser(username); // Set CurrentUser
+          console.log("Setting current user:", CurrentUser); // Check if setCurrentUser is called with correct value
           navigate('/inputCSV');
         } else {
           const data = await response.json();
@@ -41,6 +44,7 @@ function LoginCard({ users, setCurrentUser }) {
       }
     }
   };
+  
 
   return (
 

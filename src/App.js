@@ -11,9 +11,10 @@ import WorkerRequirementsChart from './WorkerRequirementsChart/WorkerRequirement
 function App() {
 
   const [users, setUsers] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [CurrentUser, setCurrentUser] = useState(null);
   const [placementData, setPlacementData] = useState(null);
   const [workerRequirementsData, setWorkerRequirementsData] = useState(null);
+ console.log("CurrentUser in App component:", CurrentUser); // Added console log
 
   return (
 
@@ -22,9 +23,9 @@ function App() {
       <header></header>
 
       <Routes>
-      <Route path="/" element={<LoginCard users={users} setCurrentUser={setCurrentUser} />} />
+      <Route path="/" element={<LoginCard setCurrentUser={setCurrentUser} CurrentUser={CurrentUser} />} />
       <Route path="/register" element={<RegisterCard users={users} setUsers={setUsers} />} />
-      <Route path="/inputCSV" element={<InputCSV setPlacementData={setPlacementData} setWorkerRequirementsData={setWorkerRequirementsData}/>} />
+      <Route path="/inputCSV" element={<InputCSV setPlacementData={setPlacementData} setWorkerRequirementsData={setWorkerRequirementsData} CurrentUser={CurrentUser}/>} />
       <Route path="/placement-table" element={<PlacementTable placementData={placementData} />} />
       <Route path="/worker-requirements-chart" element={<WorkerRequirementsChart workerRequirementsData={workerRequirementsData} placementData={placementData} />} />
       </Routes>
