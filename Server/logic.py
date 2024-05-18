@@ -5,20 +5,21 @@ import jwt
 from datetime import datetime, timedelta
 from models import User,Tables
 
-SECRET_KEY = 'hiiiihiiii'
+SECRET_KEY = 'wwwwwwwwwww'
 
 def register():
     try:
         data = request.json
         username = data.get('username')
         password = data.get('password')
+        companyName = data.get('companyName') 
 
-        if not username or not password:
-            return jsonify({'error': 'Username and password are required'}), 400
+        if not username or not password or not companyName:  
+            return jsonify({'error': 'Username, password, and company name are required'}), 400
 
         user = User()
 
-        if user.create_user(username, password):
+        if user.create_user(username, password, companyName):  
             return jsonify({'message': 'User registered successfully'}), 201
         else:
             return jsonify({'error': 'Failed to register user'}), 500
@@ -57,7 +58,6 @@ def verify_token():
         return jsonify({'error': 'Token has expired'}), 401
     except jwt.InvalidTokenError:
         return jsonify({'error': 'Invalid token'}), 401
-
 
 def polish(data):
     def remove_r(text):
@@ -116,11 +116,11 @@ def calculate_average(schedules, time_ranges):
 
             if counter > 0:
                 new_array.append({"skill": skill, "day": day, "start": start, "end": end, "number_of_employ": math.ceil(sum / counter)})
-
         return new_array
 
     except Exception as e:
         return {"error": str(e)}
+
 
 def process_csv_content(csv_content):
     try:
@@ -143,7 +143,8 @@ def process_csv_content(csv_content):
 
     except Exception as e:
         print("Error processing CSV content:", e)
-        return []  # Return an empty list in case of an error
+        return [] # Return an empty list in case of an error
+
 
 def upload_data():
     try:
@@ -151,6 +152,7 @@ def upload_data():
 
         # Get JSON data from the request
         data = request.get_json()
+
         # Access data fields
         currentUser = data.get('CurrentUser')
         employee_skill_content = data.get('employeeSkillContent')
@@ -159,6 +161,7 @@ def upload_data():
 
         if None in [employee_skill_content, worker_requirements_content, shift_basket_content]:
             return jsonify({"error": "Missing required data in the request"}), 400
+
         # Process CSV-like content and create arrays of JSON objects
         employee_skill_data = process_csv_content(employee_skill_content)
         worker_requirements_data = process_csv_content(worker_requirements_content)
@@ -169,10 +172,16 @@ def upload_data():
         worker_requirements_data = polish(worker_requirements_data)
         shift_basket_data = polish(shift_basket_data)
 
+        # Debugging logs
+        #print('Processed Employee Skill Data:', employee_skill_data)
+        #print('Processed Worker Requirements Data:', worker_requirements_data)
+        #print('Processed Shift Basket Data:', shift_basket_data)
+
+        # Save data to MongoDB
         if tables.create_tables(currentUser, employee_skill_data, worker_requirements_data, shift_basket_data):
-            print('tables saved successfully')
+            print('Tables saved successfully')
         else:
-           print('error : Failed to create tables')
+            print('Error: Failed to create tables')
 
         # Calculate average and return the result
         final_table = calculate_average(worker_requirements_data, shift_basket_data)

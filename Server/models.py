@@ -4,11 +4,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 mongo = PyMongo()
 
 class User:
-    def create_user(self, username, password):
+    def create_user(self, username, password, company_name):
         try:
             users = self.get_users_collection()
             hashed_password = generate_password_hash(password)
-            users.insert_one({'username': username, 'password': hashed_password})
+            users.insert_one({'username': username, 'password': hashed_password, 'company_name': company_name})  # Include company_name field
             return True
         except Exception as e:
             print(f"Error creating user: {e}")
@@ -30,7 +30,7 @@ class User:
             # If the users collection does not exist, create it
             db.create_collection('users')
         return db.users
-    
+        
 class Tables:
     def create_tables(self,currentUser,employee_skill,worker_requirements,shift_basket):
          try:
