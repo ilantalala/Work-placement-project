@@ -1,6 +1,7 @@
 import "./RegisterCard.css"
 import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import logoImg from './login&register.png';
 
 function RegisterCard({ users, setUsers }) {
 
@@ -8,6 +9,7 @@ function RegisterCard({ users, setUsers }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
  
 
@@ -17,7 +19,7 @@ function RegisterCard({ users, setUsers }) {
     e.preventDefault();
   
     // Perform validation checks
-    if (!username || !password || !confirmPassword || !displayName) {
+    if (!username || !password || !confirmPassword || !displayName || !companyName) {
       setErrorMessage('Please fill all the fields.');
     } else if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match.');
@@ -32,7 +34,7 @@ function RegisterCard({ users, setUsers }) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ username, password, displayName }),
+          body: JSON.stringify({ username, password, displayName, companyName }),
         });
   
         if (response.ok) {
@@ -52,49 +54,46 @@ function RegisterCard({ users, setUsers }) {
 
 
   return (
-    <div className="container">
-
-        {errorMessage && <p>{errorMessage}</p>}
-
-        <form onSubmit={handleSubmit}>
-
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
-            <input type="text" placeholder="required field..." className="form-control" id="username"
-              value={username} onChange={(e) => setUsername(e.target.value)}></input>
+    <div className="backgroundR">
+      <div className="container">
+      <div className="form">
+            {errorMessage && <p>{errorMessage}</p>}
+            <form onSubmit={handleSubmit} >
+              <h1>Register</h1>
+              <div className="form-group">
+                <label htmlFor="username">Username</label>
+                <input type="text" placeholder="required field..." className="form-control" id="username" value={username} onChange={(e) => setUsername(e.target.value)}></input>
+              </div>
+              <br />
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input type="password" className="form-control" id="password" placeholder="at least 8 characters long and both letters and digits..." value={password} onChange={(e) => setPassword(e.target.value)}></input>
+              </div>
+              <br />
+              <div className="form-group">
+                <label htmlFor="confirmPassword">Confirm password</label>
+                <input type="password" className="form-control" id="confirmPassword" placeholder="enter the exact password again..." value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}></input>
+              </div>
+              <br />
+              <div className="form-group">
+                <label htmlFor="displayName">Display name</label>
+                <input type="text" placeholder="required field..." className="form-control" id="displayName" value={displayName} onChange={(e) => setDisplayName(e.target.value)}></input>
+              </div>
+              <br />
+              <div className="form-group">
+                <label htmlFor="companyName">Company name</label>
+                <input type="text" placeholder="required field..." className="form-control" id="companyName" value={companyName} onChange={(e) => setCompanyName(e.target.value)}></input>
+              </div>
+              <br />
+              <button type="submit" className="btn btn-primary">Register</button>
+              <br /><br />
+              <div>Already registered? <Link to="/">Click here</Link> to login</div>
+            </form>
+            </div>
           </div>
-          <br></br>
-
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input type="password" className="form-control" id="password"
-              placeholder="at least 8 characters long and both letters and digits..."
-              value={password} onChange={(e) => setPassword(e.target.value)}></input>
-          </div>
-          <br></br>
-
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm password</label>
-            <input type="password" className="form-control" id="confirmPassword"
-              placeholder="enter the exact password again..."
-              value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}></input>
-          </div>
-          <br></br>
-
-          <div className="form-group">
-            <label htmlFor="displayName">Display name</label>
-            <input type="text" placeholder="required field..." className="form-control" id="displayName"
-              value={displayName} onChange={(e) => setDisplayName(e.target.value)}></input>
-          </div>
-          <br></br>
-
-          <button type="submit" className="btn btn-primary">Register</button>
-          <br></br><br></br>
-          <div>Already registered? <Link to="/">Click here</Link> to login</div>
-
-        </form>
-    </div>
-  );
+        </div>
+  );  
+  
 }
 
 export default RegisterCard;

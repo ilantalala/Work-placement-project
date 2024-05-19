@@ -1,21 +1,23 @@
-import React, { useEffect, useRef,useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Chart from 'chart.js/auto';
 
 function padTime(time) {
-  return time.padStart(5, "0")
+  return time.padStart(5, "0");
 }
+
 function textToColor(text) {
   let hash = 0;
   text.split('').forEach(char => {
-    hash = char.charCodeAt(0) + ((hash << 5) - hash)
-  })
-  let colour = '#'
+    hash = char.charCodeAt(0) + ((hash << 5) - hash);
+  });
+  let color = '#';
   for (let i = 0; i < 3; i++) {
-    const value = (hash >> (i * 8)) & 0xff
-    colour += value.toString(16).padStart(2, '0')
+    const value = (hash >> (i * 8)) & 0xff;
+    color += value.toString(16).padStart(2, '0');
   }
-  return colour
+  return color;
 }
+
 // range[0,24)
 function range(from, untilInclusive) {
   const rangeSize = untilInclusive - from;
@@ -23,13 +25,13 @@ function range(from, untilInclusive) {
 }
 
 // ["00:00", "00:30", "01:00", "01:30", ... , "23:30"]
-const timeLabels = range(0, 24).flatMap(item => [padTime(`${item}:00`), padTime(`${item}:30`)])
+const timeLabels = range(0, 24).flatMap(item => [padTime(`${item}:00`), padTime(`${item}:30`)]);
 // map [["00:00", "00:30"], ["01:00", "01:30"], ["02:00", "02:30"], ..., ["23:00", "23:30"]]
 // flatMap ["00:00", "00:30", "01:00", "01:30", "02:00", "02:30", ..., "23:00", "23:30"]
 
 
 function getWorkerRequirementsGraphData(workerRequirementsData, selectedDay, selectedSkill) {
-  const filteredData = workerRequirementsData.filter(row => row.day == selectedDay && row.skill == selectedSkill);
+  const filteredData = workerRequirementsData.filter(row => row.day === selectedDay && row.skill === selectedSkill);
   const data = new Array(timeLabels.length).fill(0);
   filteredData.forEach((current) => {
     const index = timeLabels.indexOf(padTime(current.start_time));
@@ -100,6 +102,10 @@ function WorkerRequirementsChart({ workerRequirementsData, placementData }) {
   }, [workerRequirementsData, placementData, selectedDay, selectedSkills]);
 
   const createChart = () => {
+    if (!workerRequirementsData || !placementData) {
+      console.error('workerRequirementsData or placementData is null or undefined');
+      return;
+    }
     const { data } = getWorkerRequirementsGraphData(workerRequirementsData, selectedDay, selectedSkills);
     const { datasets } = getGraphData(placementData, selectedDay, selectedSkills);
 
@@ -163,7 +169,7 @@ function WorkerRequirementsChart({ workerRequirementsData, placementData }) {
       </div>
       <div>
         <label htmlFor="skills">Select Skills: </label>
-        <select value={selectedSkills} onChange={handleSkillChange}>
+        <select value={selectedSkills} onChange={handleSkillChange} >
         {allSkills.map((skill, index) => (
         <option key={index} value={skill}>{skill}</option>
         ))}

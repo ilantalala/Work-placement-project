@@ -6,11 +6,12 @@
 }
 
 .file-upload {
+    padding: 15px;
     margin-bottom: 20px;
 }
 
 button {
-    padding: 10px 20px;
+    padding: 5px 5px;
     background-color: #4caf50;
     color: #fff;
     border: none;
