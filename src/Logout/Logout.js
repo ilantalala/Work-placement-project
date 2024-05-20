@@ -1,14 +1,18 @@
 import "./Logout.css"
 import React from 'react';
-import { Link } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 
 
-function Logout() {
+function Logout({ cleanCurrentUser}) {
 
+    const navigate = useNavigate();
+    const onLogout = () => {
+        localStorage.removeItem('username');
+        navigate('/')
+        cleanCurrentUser();
+    }
     return (
-        <Link to="/">
-            <button className="btn btn-danger logout">Logout</button>
-        </Link>
+        <button onClick={onLogout} className="btn btn-danger logout">Logout</button>
     );
 }
 

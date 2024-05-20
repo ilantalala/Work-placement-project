@@ -3,7 +3,7 @@ from flask import jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 from datetime import datetime, timedelta
-from models import User,Tables
+from models import User,Files
 
 SECRET_KEY = 'wwwwwwwwwww'
 
@@ -148,7 +148,7 @@ def process_csv_content(csv_content):
 
 def upload_data():
     try:
-        tables = Tables()
+        files = Files()
 
         # Get JSON data from the request
         data = request.get_json()
@@ -178,10 +178,10 @@ def upload_data():
         #print('Processed Shift Basket Data:', shift_basket_data)
 
         # Save data to MongoDB
-        if tables.create_tables(currentUser, employee_skill_data, worker_requirements_data, shift_basket_data):
-            print('Tables saved successfully')
+        if files.add_files(currentUser, employee_skill_data, worker_requirements_data, shift_basket_data):
+            print('Files saved successfully')
         else:
-            print('Error: Failed to create tables')
+            print('Error: Failed to create files')
 
         # Calculate average and return the result
         final_table = calculate_average(worker_requirements_data, shift_basket_data)
@@ -189,4 +189,15 @@ def upload_data():
 
     except Exception as e:
         print("Error details:", e)
+        return jsonify({"error": str(e)}), 
+        
+def get_initial_data(identifier):
+    try:
+        files = Files()
+        # Get data from MongoDB
+        files_list = files.get_user_files(identifier)
+        return jsonify(files_list), 200
+    except Exception as e:
+        print("Error details:", e)
         return jsonify({"error": str(e)}), 500
+       

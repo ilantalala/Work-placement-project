@@ -5,9 +5,32 @@ import DynamicTable from './DynamicTable';
 import './InputCSV.css';
 import Papa from 'papaparse';
 
-function InputCSV({ setPlacementData, setWorkerRequirsData, CurrentUser }) {
+function InputCSV({ cleanCurrentUser, setPlacementData, setWorkerRequirsData2, CurrentUser }) {
   const navigate = useNavigate();
-  useEffect(() => {}, [CurrentUser]);
+  
+  useEffect(() => {
+    if (CurrentUser) {
+      fetch(`http://localhost:5000/api/${CurrentUser}/get_initial_data`)
+      .then((res) => res.json())
+      .then((data)=> {
+        console.log("data", data)
+        const employeeSkill = data.find((item)=> item.type === 'employee_skill');
+        if (employeeSkill) setEmployeeSkillData(transformData(employeeSkill?.data));
+
+        const workerRequirements = data.find((item)=> item.type === 'worker_requirements');
+        if (workerRequirements) setWorkerRequirementsData(transformData(workerRequirements?.data));
+
+
+        const shiftBasket = data.find((item)=> item.type === 'shift_basket');
+        if (shiftBasket) setShiftBasketData(transformData(shiftBasket?.data));
+
+      }).catch((err)=> {
+        console.log("Error while trying to get existing user data...", err)
+      })
+    } else {
+      navigate('/')
+    }
+  }, [CurrentUser]);
 
   const [employeeSkill, setEmployeeSkill] = useState(null);
   const [workerRequirements, setWorkerRequirements] = useState(null);
@@ -50,20 +73,35 @@ function InputCSV({ setPlacementData, setWorkerRequirsData, CurrentUser }) {
     return data.map(row => Object.values(row));
   };
 
+  function transformWorkerRequirementsData(workerRequirementsData) {
+    if (!Array.isArray(workerRequirementsData) || !Array.isArray(workerRequirementsData[0])) {
+      console.log("Data is already in the desired format:", workerRequirementsData);
+      return workerRequirementsData; // Return data as it is if already in the desired format
+    }
+  
+    return workerRequirementsData.map(row => ({
+      day: row[0],
+      skill: row[1],
+      start: row[2],
+      end: row[3],
+      number_of_employ: parseInt(row[4], 10)
+    }));
+  }
+  
   const handlePlacement = async () => {
     if (filesUploadedEmployeeSkill.employeeSkill && filesUploadedWorkerRequirements.workerRequirements && filesUploadedShiftBasket.shiftBasket) {
       try {
         const employeeSkillContent = Papa.unparse({ fields: requiredHeaders.employeeSkill, data: employeeSkillData });
         const workerRequirementsContent = Papa.unparse({ fields: requiredHeaders.workerRequirements, data: workerRequirementsData });
         const shiftBasketContent = Papa.unparse({ fields: requiredHeaders.shiftBasket, data: shiftBasketData });
-
+  
         console.log('Sending data to server:', {
           CurrentUser,
           employeeSkillContent,
           workerRequirementsContent,
           shiftBasketContent,
         });
-
+  
         const response = await fetch('http://localhost:5000/api/upload-data', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -74,12 +112,14 @@ function InputCSV({ setPlacementData, setWorkerRequirsData, CurrentUser }) {
             shiftBasketContent,
           }),
         });
-
+  
         if (response.ok) {
           const data = await response.json();
           console.log('Received data from server:', data);
+          const transformedWorkerRequirements = transformWorkerRequirementsData(workerRequirementsData);
+          console.log("Transformed Worker Requirements Data:", transformedWorkerRequirements);
           setPlacementData(data);
-          setWorkerRequirsData(workerRequirementsData)
+          setWorkerRequirsData2(transformedWorkerRequirements);
           navigate('/placement-table');
         } else {
           console.error('Error:', response.statusText);
@@ -93,10 +133,11 @@ function InputCSV({ setPlacementData, setWorkerRequirsData, CurrentUser }) {
       setNotification('Please upload all three CSV files before placing employees.');
     }
   };
+  
 
   return (
     <>
-      <Logout />
+      <Logout cleanCurrentUser={cleanCurrentUser} />
       <div className="container">
         <h1>Employee Placement System</h1>
         <form id="csvForm" encType="multipart/form-data">

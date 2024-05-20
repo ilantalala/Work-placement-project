@@ -2,7 +2,7 @@
 
 from flask import Blueprint
 
-from logic import register, login, verify_token, upload_data
+from logic import register, login, verify_token, upload_data, get_initial_data
 
 # Create a Blueprint for routes
 routes_bp = Blueprint('routes', __name__)
@@ -23,3 +23,8 @@ def verify_token_route():
 @routes_bp.route('/api/upload-data', methods=['POST'])
 def upload_data_route():
      return upload_data()
+
+@routes_bp.route('/api/<identifier>/get_initial_data', methods=['GET'])
+def get_initial_data_route(identifier):
+     return get_initial_data(identifier)
+
