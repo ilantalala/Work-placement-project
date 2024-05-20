@@ -31,29 +31,37 @@ class User:
             db.create_collection('users')
         return db.users
         
-class Tables:
-    def create_tables(self,currentUser,employee_skill,worker_requirements,shift_basket):
+class Files:
+    def add_files(self,currentUser,employee_skill,worker_requirements,shift_basket):
          try:
-            tables = self.get_tables_collection()
-            tables.insert_one({'identifier': currentUser, 'data': employee_skill})
-            tables.insert_one({'identifier': currentUser, 'data': worker_requirements})
-            tables.insert_one({'identifier': currentUser, 'data': shift_basket})
+            files = self.get_files_collection()
+            files.insert_one({'identifier': currentUser, 'data': employee_skill, 'type': 'employee_skill'})
+            files.insert_one({'identifier': currentUser, 'data': worker_requirements, 'type': 'worker_requirements'})
+            files.insert_one({'identifier': currentUser, 'data': shift_basket, 'type' : 'shift_basket'})
             return True
          except Exception as e:
-            print(f"Error creating tables: {e}")
+            print(f"Error creating files: {e}")
             return False
-    def find_table(self,currentUser):
+    def find_file(self,currentUser):
         try:
-            tables = self.get_tables_collection()
-            tables_document = tables.find_one({'identifier': currentUser})
-            return tables_document
+            files = self.get_files_collection()
+            files_document = files.find_one({'identifier': currentUser})
+            return files_document
         except Exception as e:
-            print(f"Error finding table: {e}")
-            return None        
-    def get_tables_collection(self):
-        # Access the tables collection from the MongoDB database
+            print(f"Error finding file: {e}")
+            return None
+    def get_user_files(self, currentUser):
+        try:
+            files = self.get_files_collection()
+            all_files = files.find({ 'identifier': currentUser}, { '_id': 0 })            
+            return list(all_files)
+        except Exception as e:
+            print(f"Error while finding user files: {e}")
+            return None
+    def get_files_collection(self):
+        # Access the files collection from the MongoDB database
         db = mongo.db
-        if 'tables' not in db.list_collection_names():
-            # If the tables collection does not exist, create it
-            db.create_collection('tables')
-        return db.tables   
+        if 'files' not in db.list_collection_names():
+            # If the files collection does not exist, create it
+            db.create_collection('files')
+        return db.files

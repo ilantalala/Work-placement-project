@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 
-from models import mongo, User,Tables
+from models import mongo, User,Files
 from routes import routes_bp
 
 
@@ -16,7 +16,7 @@ mongo.init_app(app)
 
 # Initialize User model
 user = User()
-tables = Tables()
+files = Files()
 # Enable CORS
 CORS(app)
 
