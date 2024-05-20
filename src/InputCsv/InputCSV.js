@@ -5,9 +5,32 @@ import DynamicTable from './DynamicTable';
 import './InputCSV.css';
 import Papa from 'papaparse';
 
-function InputCSV({ setPlacementData, setWorkerRequirsData2, CurrentUser }) {
+function InputCSV({ cleanCurrentUser, setPlacementData, setWorkerRequirsData2, CurrentUser }) {
   const navigate = useNavigate();
-  useEffect(() => {}, [CurrentUser]);
+  
+  useEffect(() => {
+    if (CurrentUser) {
+      fetch(`http://localhost:5000/api/${CurrentUser}/get_initial_data`)
+      .then((res) => res.json())
+      .then((data)=> {
+        console.log("data", data)
+        const employeeSkill = data.find((item)=> item.type === 'employee_skill');
+        if (employeeSkill) setEmployeeSkillData(transformData(employeeSkill?.data));
+
+        const workerRequirements = data.find((item)=> item.type === 'worker_requirements');
+        if (workerRequirements) setWorkerRequirementsData(transformData(workerRequirements?.data));
+
+
+        const shiftBasket = data.find((item)=> item.type === 'shift_basket');
+        if (shiftBasket) setShiftBasketData(transformData(shiftBasket?.data));
+
+      }).catch((err)=> {
+        console.log("Error while trying to get existing user data...", err)
+      })
+    } else {
+      navigate('/')
+    }
+  }, [CurrentUser]);
 
   const [employeeSkill, setEmployeeSkill] = useState(null);
   const [workerRequirements, setWorkerRequirements] = useState(null);
@@ -114,7 +137,7 @@ function InputCSV({ setPlacementData, setWorkerRequirsData2, CurrentUser }) {
 
   return (
     <>
-      <Logout />
+      <Logout cleanCurrentUser={cleanCurrentUser} />
       <div className="container">
         <h1>Employee Placement System</h1>
         <form id="csvForm" encType="multipart/form-data">
