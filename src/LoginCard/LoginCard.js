@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logoImg from './login&register.png';
 import './LoginCard.css'
@@ -12,6 +12,11 @@ function LoginCard({setCurrentUser,CurrentUser}) {
   
   const navigate = useNavigate();
 
+  useEffect(()=> {
+    if (CurrentUser) {
+      navigate('/inputCSV');
+    }
+  }, [CurrentUser])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,6 +36,7 @@ function LoginCard({setCurrentUser,CurrentUser}) {
         if (response.ok) {
           const data = await response.json();
           localStorage.setItem('token', data.token);
+          localStorage.setItem('username', username);
           setCurrentUser(username);
           navigate('/inputCSV');
         } else {
