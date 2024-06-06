@@ -1,4 +1,5 @@
 import math
+import uuid
 from flask import jsonify, request
 from datetime import datetime, timedelta
 from models import Files
@@ -81,6 +82,8 @@ def process_csv_content(csv_content):
 
             # Create a dictionary using headers as keys and values as values
             entry = {headers[i]: values[i] for i in range(len(headers))}
+            entry['_id'] = str(uuid.uuid4())
+
             data.append(entry)
 
         return data
