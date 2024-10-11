@@ -1,63 +1,8 @@
 import math
+import uuid
 from flask import jsonify, request
-from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
 from datetime import datetime, timedelta
-from models import User,Files
-
-SECRET_KEY = 'wwwwwwwwwww'
-
-def register():
-    try:
-        data = request.json
-        username = data.get('username')
-        password = data.get('password')
-        companyName = data.get('companyName') 
-
-        if not username or not password or not companyName:  
-            return jsonify({'error': 'Username, password, and company name are required'}), 400
-
-        user = User()
-
-        if user.create_user(username, password, companyName):  
-            return jsonify({'message': 'User registered successfully'}), 201
-        else:
-            return jsonify({'error': 'Failed to register user'}), 500
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-def login():
-    try:
-        data = request.json
-        username = data.get('username')
-        password = data.get('password')
-
-        if not username or not password:
-            return jsonify({'error': 'Username and password are required'}), 400
-
-        user = User()
-        user_data = user.find_user(username)
-
-        if user_data and check_password_hash(user_data.get('password'), password):
-            return jsonify({'message': 'Login successful'}), 200
-        else:
-            return jsonify({'error': 'Invalid username or password'}), 401
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-def verify_token():
-    try:
-        token = request.headers.get('Authorization')
-
-        if not token:
-            return jsonify({'error': 'Token is missing'}), 401
-
-        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-        return jsonify({'message': 'Token is valid', 'username': decoded_token.get('username')}), 200
-    except jwt.ExpiredSignatureError:
-        return jsonify({'error': 'Token has expired'}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({'error': 'Invalid token'}), 401
+from models import Files, Schedule
 
 def polish(data):
     def remove_r(text):
@@ -137,6 +82,8 @@ def process_csv_content(csv_content):
 
             # Create a dictionary using headers as keys and values as values
             entry = {headers[i]: values[i] for i in range(len(headers))}
+            entry['_id'] = str(uuid.uuid4())
+
             data.append(entry)
 
         return data
@@ -178,6 +125,7 @@ def upload_data():
         #print('Processed Shift Basket Data:', shift_basket_data)
 
         # Save data to MongoDB
+        print(currentUser)
         if files.add_files(currentUser, employee_skill_data, worker_requirements_data, shift_basket_data):
             print('Files saved successfully')
         else:
@@ -185,6 +133,11 @@ def upload_data():
 
         # Calculate average and return the result
         final_table = calculate_average(worker_requirements_data, shift_basket_data)
+        
+        print("Final Table:", final_table)
+        schedule = Schedule()
+        schedule.add_schedule(currentUser, final_table)
+
         return jsonify(final_table), 200
 
     except Exception as e:

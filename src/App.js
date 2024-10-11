@@ -7,6 +7,8 @@ import RegisterCard from './registerCard/RegisterCard';
 import InputCSV from './InputCsv/InputCSV';
 import PlacementTable from './PlacementTable/PlacementTable';
 import WorkerRequirementsChart from './WorkerRequirementsChart/WorkerRequirementsChart';
+import Logout from './Logout/Logout';
+import { FileManager } from './InputCsv/FileManager';
 
 function App() {
   const [users, setUsers] = useState([]);
@@ -20,17 +22,18 @@ function App() {
     if (username) {
       setCurrentUser(username);
     } 
-  },[])
+  }, [])
   return (
 
     <BrowserRouter>
-
+      <Logout cleanCurrentUser={()=> setCurrentUser(null)} currentUser={CurrentUser} />
       <header></header>
-
       <Routes>
       <Route path="/" element={<LoginCard setCurrentUser={setCurrentUser} CurrentUser={CurrentUser} />} />
       <Route path="/register" element={<RegisterCard users={users} setUsers={setUsers} />} />
-      <Route path="/inputCSV" element={<InputCSV cleanCurrentUser={()=> setCurrentUser(null)} setPlacementData={setPlacementData} setWorkerRequirsData2={setWorkerRequirementsData} CurrentUser={CurrentUser}/>} />
+      <Route path="/inputCSV" element={<FileManager currentUser={CurrentUser} />} />
+
+      <Route path="/oldInputCsv" element={<InputCSV  setPlacementData={setPlacementData} setWorkerRequirsData2={setWorkerRequirementsData} CurrentUser={CurrentUser}/>} />
       <Route path="/placement-table" element={<PlacementTable placementData={placementData} workerRequirementsData={workerRequirementsData} />} />
       <Route path="/worker-requirements-chart" element={<WorkerRequirementsChart workerRequirementsData={workerRequirementsData} placementData={placementData} />} />
       </Routes>

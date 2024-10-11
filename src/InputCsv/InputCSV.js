@@ -6,6 +6,7 @@ import './InputCSV.css';
 import Papa from 'papaparse';
 
 function InputCSV({ cleanCurrentUser, setPlacementData, setWorkerRequirsData2, CurrentUser }) {
+  
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -15,16 +16,21 @@ function InputCSV({ cleanCurrentUser, setPlacementData, setWorkerRequirsData2, C
       .then((data)=> {
         console.log("data", data)
         const employeeSkill = data.find((item)=> item.type === 'employee_skill');
-        if (employeeSkill) setEmployeeSkillData(transformData(employeeSkill?.data));
-
-        const workerRequirements = data.find((item)=> item.type === 'worker_requirements');
-        if (workerRequirements) setWorkerRequirementsData(transformData(workerRequirements?.data));
-
+        if (employeeSkill) {
+          setEmployeeSkillData(transformData(employeeSkill?.data));
+          setFilesUploadedEmployeeSkill({ employeeSkill: true });}
+        
+          const workerRequirements = data.find((item)=> item.type === 'worker_requirements');
+        if (workerRequirements){
+          setWorkerRequirementsData(transformData(workerRequirements?.data));
+          setFilesUploadedWorkerRequirements({ workerRequirements: true });} 
 
         const shiftBasket = data.find((item)=> item.type === 'shift_basket');
-        if (shiftBasket) setShiftBasketData(transformData(shiftBasket?.data));
-
-      }).catch((err)=> {
+        if (shiftBasket) {
+          setShiftBasketData(transformData(shiftBasket?.data));
+          setFilesUploadedShiftBasket({ shiftBasket: true });}
+      
+        }).catch((err)=> {
         console.log("Error while trying to get existing user data...", err)
       })
     } else {
@@ -32,9 +38,6 @@ function InputCSV({ cleanCurrentUser, setPlacementData, setWorkerRequirsData2, C
     }
   }, [CurrentUser]);
 
-  const [employeeSkill, setEmployeeSkill] = useState(null);
-  const [workerRequirements, setWorkerRequirements] = useState(null);
-  const [shiftBasket, setShiftBasket] = useState(null);
   const [notification, setNotification] = useState('');
   const [filesUploadedEmployeeSkill, setFilesUploadedEmployeeSkill] = useState({ employeeSkill: false });
   const [filesUploadedWorkerRequirements, setFilesUploadedWorkerRequirements] = useState({ workerRequirements: false });
@@ -137,7 +140,6 @@ function InputCSV({ cleanCurrentUser, setPlacementData, setWorkerRequirsData2, C
 
   return (
     <>
-      <Logout cleanCurrentUser={cleanCurrentUser} />
       <div className="container">
         <h1>Employee Placement System</h1>
         <form id="csvForm" encType="multipart/form-data">
@@ -150,7 +152,6 @@ function InputCSV({ cleanCurrentUser, setPlacementData, setWorkerRequirsData2, C
               accept=".csv"
               onChange={async (e) => {
                 const file = e.target.files[0];
-                setEmployeeSkill(file);
                 const content = await readCSVFile(file);
                 const parsedData = Papa.parse(content, { header: true, skipEmptyLines: true }).data;
                 if (validateCSVHeaders(parsedData, 'employeeSkill')) {
@@ -171,7 +172,6 @@ function InputCSV({ cleanCurrentUser, setPlacementData, setWorkerRequirsData2, C
               accept=".csv"
               onChange={async (e) => {
                 const file = e.target.files[0];
-                setWorkerRequirements(file);
                 const content = await readCSVFile(file);
                 const parsedData = Papa.parse(content, { header: true, skipEmptyLines: true }).data;
                 if (validateCSVHeaders(parsedData, 'workerRequirements')) {
@@ -192,7 +192,6 @@ function InputCSV({ cleanCurrentUser, setPlacementData, setWorkerRequirsData2, C
               accept=".csv"
               onChange={async (e) => {
                 const file = e.target.files[0];
-                setShiftBasket(file);
                 const content = await readCSVFile(file);
                 const parsedData = Papa.parse(content, { header: true, skipEmptyLines: true }).data;
                 if (validateCSVHeaders(parsedData, 'shiftBasket')) {
@@ -210,27 +209,45 @@ function InputCSV({ cleanCurrentUser, setPlacementData, setWorkerRequirsData2, C
         {filesUploadedEmployeeSkill.employeeSkill && filesUploadedWorkerRequirements.workerRequirements && filesUploadedShiftBasket.shiftBasket && (
           <button onClick={handlePlacement}>Place Employees</button>
         )}
+        </div>
         <div className="file-contents">
           {employeeSkillData.length > 0 && (
-            <div>
+            <div className="content-section">
               <h2>Employee Skill Content</h2>
-              <DynamicTable headers={requiredHeaders.employeeSkill} data={employeeSkillData} onDataChange={setEmployeeSkillData} />
+              <div className="scrollable-content">
+                <DynamicTable
+                  headers={requiredHeaders.employeeSkill}
+                  data={employeeSkillData}
+                  onDataChange={setEmployeeSkillData}
+                />
+              </div>
             </div>
           )}
           {workerRequirementsData.length > 0 && (
-            <div>
+            <div className="content-section">
               <h2>Worker Requirements Content</h2>
-              <DynamicTable headers={requiredHeaders.workerRequirements} data={workerRequirementsData} onDataChange={setWorkerRequirementsData} />
+              <div className="scrollable-content">
+                <DynamicTable
+                  headers={requiredHeaders.workerRequirements}
+                  data={workerRequirementsData}
+                  onDataChange={setWorkerRequirementsData}
+                />
+              </div>
             </div>
           )}
           {shiftBasketData.length > 0 && (
-            <div>
+            <div className="content-section">
               <h2>Shift Basket Content</h2>
-              <DynamicTable headers={requiredHeaders.shiftBasket} data={shiftBasketData} onDataChange={setShiftBasketData} />
+              <div className="scrollable-content">
+                <DynamicTable
+                  headers={requiredHeaders.shiftBasket}
+                  data={shiftBasketData}
+                  onDataChange={setShiftBasketData}
+                />
+              </div>
             </div>
           )}
         </div>
-      </div>
     </>
   );
 }
