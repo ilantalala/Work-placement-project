@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
 import Chart from 'chart.js/auto';
+import { transformWorkerRequirementsData } from '../utils/transformWorkerRequirements';
 
 function padTime(time) {
   return time.padStart(5, "0");
@@ -69,16 +71,33 @@ function getGraphData(dataFromCsv, selectedDay, selectedSkills) {
 }
 
 
-function WorkerRequirementsChart({ workerRequirementsData, placementData }) {
+function WorkerRequirementsChart({ placementData, currentUser }) {
+  const [workerRequirementsData, setWorkerRequirementsData]= useState([]);
   const chartContainerRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const [selectedDay, setSelectedDay] = useState('Sunday');
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [allSkills, setAllSkills] = useState([]);
 
+  useEffect(() => {
+    if (currentUser) {
+      axios.get(`http://localhost:5000/api/${currentUser}/get_initial_data`)
+      .then(({ data })=> {
+        const workerRequirements = data.find((item)=> item.type === 'worker_requirements')?.data;
+        if (workerRequirements) {
+          setWorkerRequirementsData(transformWorkerRequirementsData(workerRequirements));
+        } else {
+          alert("Missing worker requirements data");
+        }
+      }).catch((err)=> {
+        console.log("Error while trying to get existing user data...", err)
+      })
+    }
+  }, [currentUser]);
+
   // Update allSkills when placementData changes or selectedDay changes
   useEffect(() => {
-    if (placementData.length > 0) {
+    if (placementData && placementData.length > 0) {
       const filteredSkills = [...new Set(placementData.filter(row => row.day === selectedDay).map(row => row.skill))];
       setAllSkills(filteredSkills);
     }
@@ -96,7 +115,7 @@ function WorkerRequirementsChart({ workerRequirementsData, placementData }) {
   };
 
   useEffect(() => {
-    if (workerRequirementsData.length > 0 && placementData.length > 0) {
+    if (workerRequirementsData && placementData && workerRequirementsData.length > 0 && placementData.length > 0) {
       createChart();
     }
   }, [workerRequirementsData, placementData, selectedDay, selectedSkills]);

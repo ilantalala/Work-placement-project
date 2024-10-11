@@ -99,7 +99,7 @@ function InputCSV({ cleanCurrentUser, setPlacementData, setWorkerRequirsData2, C
         const shiftBasketContent = Papa.unparse({ fields: requiredHeaders.shiftBasket, data: shiftBasketData });
   
         console.log('Sending data to server:', {
-          CurrentUser,
+          currentUser: CurrentUser,
           employeeSkillContent,
           workerRequirementsContent,
           shiftBasketContent,
@@ -109,7 +109,7 @@ function InputCSV({ cleanCurrentUser, setPlacementData, setWorkerRequirsData2, C
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            CurrentUser,
+            currentUser: CurrentUser,
             employeeSkillContent,
             workerRequirementsContent,
             shiftBasketContent,

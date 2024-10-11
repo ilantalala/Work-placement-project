@@ -1,14 +1,15 @@
 // PlacementTable.js
 
-import React from 'react';
+import React, {useEffect} from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './PlacementTable.css';
 
-function PlacementTable({ placementData, workerRequirementsData }) {
+function PlacementTable({ loading, placementData }) {
      return (
          <div className="placement-table-container">
              <h2>Placement Table</h2>
-             { placementData && placementData.length > 0 ? (
+             {loading ? "Loading placement data...." : placementData && placementData.length > 0 ? (
              <div>
                  <table>
                      <thead>
@@ -32,7 +33,7 @@ function PlacementTable({ placementData, workerRequirementsData }) {
                      ))}
                      </tbody>
                  </table>
-                 <Link to={{ pathname: "/worker-requirements-chart", state: { workerRequirementsData: workerRequirementsData, placementData: placementData } }}>
+                 <Link to={{ pathname: "/worker-requirements-chart" }}>
                          <button>View Worker Requirements Chart</button>
                  </Link>
              </div>

@@ -6,7 +6,7 @@ import { AddCSVFileButton } from './AddCSVFile';
 import { AddFilesModal } from './AddFilesModal';
 import CustomTabPanel from './CustomTabPanel';
 
-export const FileManager = ({ currentUser }) => {
+export const FileManager = ({ currentUser ,setPlacementData}) => {
     const navigate = useNavigate();
     const [value, setValue] = useState(0);
     const [initialData, setInitialData] = useState({});
@@ -45,7 +45,7 @@ export const FileManager = ({ currentUser }) => {
                     <Tab label="Worker Requirements" />
                     <Tab label="Shift Basket"  />
                 </Tabs>
-                <AddFilesModal initialData={initialData} setInitialData={setInitialData} />
+                <AddFilesModal setPlacementData={setPlacementData} initialData={initialData} setInitialData={setInitialData} currentUser={currentUser} />
             </Box>
             <CustomTabPanel value={value} index={0}>
                 <AddCSVFileButton name="employeeSkill" setData={setData}/>
