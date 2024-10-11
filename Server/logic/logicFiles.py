@@ -2,7 +2,7 @@ import math
 import uuid
 from flask import jsonify, request
 from datetime import datetime, timedelta
-from models import Files
+from models import Files, Schedule
 
 def polish(data):
     def remove_r(text):
@@ -125,6 +125,7 @@ def upload_data():
         #print('Processed Shift Basket Data:', shift_basket_data)
 
         # Save data to MongoDB
+        print(currentUser)
         if files.add_files(currentUser, employee_skill_data, worker_requirements_data, shift_basket_data):
             print('Files saved successfully')
         else:
@@ -132,6 +133,11 @@ def upload_data():
 
         # Calculate average and return the result
         final_table = calculate_average(worker_requirements_data, shift_basket_data)
+        
+        print("Final Table:", final_table)
+        schedule = Schedule()
+        schedule.add_schedule(currentUser, final_table)
+
         return jsonify(final_table), 200
 
     except Exception as e:

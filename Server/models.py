@@ -33,6 +33,7 @@ class User:
         
 class Files:
     def add_files(self,currentUser,employee_skill,worker_requirements,shift_basket):
+         print(currentUser)
          try:
             files = self.get_files_collection()
             files.insert_one({'identifier': currentUser, 'data': employee_skill, 'type': 'employee_skill'})
@@ -65,3 +66,29 @@ class Files:
             # If the files collection does not exist, create it
             db.create_collection('files')
         return db.files
+
+class Schedule:
+    def get_user_schedule(self, currentUser):
+        try:
+            schedules = self.get_schedule_collection()
+            schedule_document = schedules.find_one({'identifier': currentUser})
+            return schedule_document
+        except Exception as e:
+            print(f"Error finding schedule: {e}")
+            return None
+    def add_schedule(self,currentUser,schedule):
+         print(currentUser)
+         try:
+            schedules = self.get_schedule_collection()
+            schedules.insert_one({'identifier': currentUser, 'data': schedule})
+            return True
+         except Exception as e:
+            print(f"Error creating schedule: {e}")
+            return False
+    def get_schedule_collection(self):
+        # Access the schedule collection from the MongoDB database
+        db = mongo.db
+        if 'schedule' not in db.list_collection_names():
+            # If the schedule collection does not exist, create it
+            db.create_collection('schedule')
+        return db.schedule

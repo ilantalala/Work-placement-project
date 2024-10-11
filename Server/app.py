@@ -1,10 +1,10 @@
 from flask import Flask
 from flask_cors import CORS
-
 from models import mongo, User, Files
 
 from routes.routesUser import routes_user
 from routes.routesFiles import routes_files
+from routes.routesSchedule import routes_schedule
 
 
 # Initialize Flask app
@@ -25,6 +25,7 @@ CORS(app)
 # Register Blueprint
 app.register_blueprint(routes_user)
 app.register_blueprint(routes_files)
+app.register_blueprint(routes_schedule)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
