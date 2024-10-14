@@ -1,5 +1,6 @@
 from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
+import uuid
 
 mongo = PyMongo()
 
@@ -36,9 +37,26 @@ class Files:
          print(currentUser)
          try:
             files = self.get_files_collection()
-            files.insert_one({'identifier': currentUser, 'data': employee_skill, 'type': 'employee_skill'})
-            files.insert_one({'identifier': currentUser, 'data': worker_requirements, 'type': 'worker_requirements'})
-            files.insert_one({'identifier': currentUser, 'data': shift_basket, 'type' : 'shift_basket'})
+            files.update_one(
+                {'identifier': currentUser, 'type': 'employee_skill'}, 
+                {'$set': {'data': employee_skill}}, 
+                upsert=True 
+            )
+
+            # Upsert worker_requirements data
+            files.update_one(
+                {'identifier': currentUser, 'type': 'worker_requirements'}, 
+                {'$set': {'data': worker_requirements}}, 
+                upsert=True 
+            )
+
+            # Upsert shift_basket data
+            files.update_one(
+                {'identifier': currentUser, 'type': 'shift_basket'}, 
+                {'$set': {'data': shift_basket}},  
+                upsert=True  
+            )
+
             return True
          except Exception as e:
             print(f"Error creating files: {e}")
@@ -67,28 +85,63 @@ class Files:
             db.create_collection('files')
         return db.files
 
-class Schedule:
-    def get_user_schedule(self, currentUser):
+class Shifts:
+    def get_user_shifts(self, currentUser):
         try:
-            schedules = self.get_schedule_collection()
-            schedule_document = schedules.find_one({'identifier': currentUser})
-            return schedule_document
+            shifts = self.get_shifts_collection()
+            shifts_document = shifts.find_one({'identifier': currentUser})
+            return shifts_document
         except Exception as e:
-            print(f"Error finding schedule: {e}")
+            print(f"Error finding shifts: {e}")
             return None
-    def add_schedule(self,currentUser,schedule):
-         print(currentUser)
-         try:
-            schedules = self.get_schedule_collection()
-            schedules.insert_one({'identifier': currentUser, 'data': schedule})
+    def add_shifts(self,currentUser,shifts):
+        print("user is", currentUser)
+            # Check if currentUser is None or empty
+        if not currentUser:
+            raise ValueError("currentUser cannot be None")
+
+        try:
+            for shift in shifts:
+                shift['id'] = str(uuid.uuid4())  # Add a unique ID to each shift
+
+            # Get the shifts collection
+            shifts_collection = self.get_shifts_collection()
+
+            # Upsert the shifts data
+            shifts_collection.update_one(
+                {'identifier': currentUser},  # Query to find the document by user identifier
+                {'$set': {'data': shifts}},  # Update operation to set the shifts data
+                upsert=True  # Insert if no document matches the query
+            )
             return True
-         except Exception as e:
-            print(f"Error creating schedule: {e}")
+        except Exception as e:
+            print(f"Error creating shifts: {e}")
             return False
-    def get_schedule_collection(self):
-        # Access the schedule collection from the MongoDB database
+    def update_user_shifts(self, currentUser, shifts):
+        # Check if currentUser is None or empty
+        if not currentUser:
+            raise ValueError("currentUser cannot be None")
+
+        try:
+            for shift in shifts:
+                if 'id' not in shift:
+                    shift['id'] = str(uuid.uuid4())  # Add a unique ID to each shift
+
+            # Get the shifts collection
+            shifts_collection = self.get_shifts_collection()
+
+            # Update the shifts data
+            shifts_collection.update_one(
+                {'identifier': currentUser},  # Query to find the document by user identifier
+                {'$set': {'data': shifts}}  # Update operation to set the shifts data
+            )
+            return shifts
+        except Exception as e:
+            print(f"Error updating shifts: {e}")
+            return None
+    def get_shifts_collection(self):
         db = mongo.db
-        if 'schedule' not in db.list_collection_names():
-            # If the schedule collection does not exist, create it
-            db.create_collection('schedule')
-        return db.schedule
+        if 'shifts' not in db.list_collection_names():
+            # If the shifts collection does not exist, create it
+            db.create_collection('shifts')
+        return db.shifts

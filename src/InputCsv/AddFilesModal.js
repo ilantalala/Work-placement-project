@@ -94,11 +94,13 @@ import { AddCSVFileButton } from "./AddCSVFile";
 import { Box, Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import Papa from "papaparse";
 import { requiredHeaders } from "./headers";
+import { useNavigate } from "react-router-dom";
 
-export const AddFilesModal = ({ setPlacementData, setInitialData }) => {
+export const AddFilesModal = ({ setPlacementData, setInitialData, currentUser }) => {
   const [open, setIsOpen] = useState(false);
   const [csvData, setCsvData] = useState({});
   const [notification, setNotification] = useState('');
+  const navigate = useNavigate();
 
   const setData = (key, value) => {
     setCsvData(prev => ({ ...prev, [key]: value }));
@@ -112,6 +114,7 @@ export const AddFilesModal = ({ setPlacementData, setInitialData }) => {
         const shiftBasketContent = Papa.unparse({ fields: requiredHeaders.shiftBasket, data: csvData.shiftBasket });
 
         console.log('Sending data to server:', {
+          currentUser,
           employeeSkillContent,
           workerRequirementsContent,
           shiftBasketContent,
@@ -121,6 +124,7 @@ export const AddFilesModal = ({ setPlacementData, setInitialData }) => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            currentUser,
             employeeSkillContent,
             workerRequirementsContent,
             shiftBasketContent,
@@ -132,6 +136,7 @@ export const AddFilesModal = ({ setPlacementData, setInitialData }) => {
           console.log('Received data from server:', data);
           setPlacementData(data);
           setNotification('Data uploaded successfully.');
+          navigate('/placement-table');
         } else {
           console.error('Error:', response.statusText);
           setNotification('Error uploading data to the server. Please try again.');

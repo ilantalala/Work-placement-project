@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import logoImg from './login&register.png';
 import './LoginCard.css'
@@ -25,27 +26,14 @@ function LoginCard({setCurrentUser,CurrentUser}) {
       setErrorMessage('Please fill all fields.');
     } else {
       try {
-        const response = await fetch('http://localhost:5000/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ username, password, companyName }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('username', username);
-          setCurrentUser(username);
-          navigate('/inputCSV');
-        } else {
-          const data = await response.json();
-          setErrorMessage(data.message);
-        }
+        const data = await axios.post('http://localhost:5000/api/login', { username, password, companyName });
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', username);
+        setCurrentUser(username);
+        navigate('/inputCSV');
       } catch (error) {
         console.error('Error logging in:', error);
-        setErrorMessage('An error occurred while logging in. Please try again.');
+        setErrorMessage(error?.response?.data?.error || 'An error occurred while logging in. Please try again.');
       }
     }
   };
@@ -54,7 +42,7 @@ function LoginCard({setCurrentUser,CurrentUser}) {
     <div className="backgroundR">
       <div className="container">
       <div className="form">
-            {errorMessage && <p>{errorMessage}</p>}
+            {errorMessage && <p style={{color: 'red'}}>{errorMessage}</p>}
             <form onSubmit={handleSubmit} >
               <h1>Login</h1>
               <div className="form-group">
