@@ -29,7 +29,7 @@ function App() {
   useEffect(()=> {
       if (CurrentUser) {
           setLoading(true);
-          axios.get(`http://localhost:5000/api/${CurrentUser}/schedule`)
+          axios.get(`http://localhost:5000/api/${CurrentUser}/shifts`)
           .then((response) => {
               console.log("Response table: ", response.data);
               setPlacementData(response.data.data)
@@ -58,7 +58,7 @@ function App() {
       <Route path="/inputCSV" element={<FileManager currentUser={CurrentUser} setPlacementData={setPlacementData} />} />
 
       <Route path="/oldInputCsv" element={<InputCSV  setPlacementData={setPlacementData} setWorkerRequirsData2={setWorkerRequirementsData} CurrentUser={CurrentUser}/>} />
-      <Route path="/placement-table" element={<PlacementTable loading={loading} placementData={placementData} workerRequirementsData={workerRequirementsData} />} />
+      <Route path="/placement-table" element={<PlacementTable loading={loading} currentUser={CurrentUser} placementData={placementData} workerRequirementsData={workerRequirementsData} />} />
       <Route path="/worker-requirements-chart" element={<WorkerRequirementsChart currentUser={CurrentUser} placementData={placementData} />} />
       </Routes>
       
