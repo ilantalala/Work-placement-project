@@ -2,7 +2,7 @@ import math
 import uuid
 from flask import jsonify, request
 from datetime import datetime, timedelta
-from models import Files, Schedule
+from models import Files, Shifts
 
 def polish(data):
     def remove_r(text):
@@ -101,7 +101,7 @@ def upload_data():
         data = request.get_json()
 
         # Access data fields
-        currentUser = data.get('CurrentUser')
+        currentUser = data.get('currentUser')
         employee_skill_content = data.get('employeeSkillContent')
         worker_requirements_content = data.get('workerRequirementsContent')
         shift_basket_content = data.get('shiftBasketContent')
@@ -135,8 +135,10 @@ def upload_data():
         final_table = calculate_average(worker_requirements_data, shift_basket_data)
         
         print("Final Table:", final_table)
-        schedule = Schedule()
-        schedule.add_schedule(currentUser, final_table)
+
+        # Insert the result ("best" shifts for this week) to the database 
+        shift = Shifts()
+        shift.add_shifts(currentUser, final_table)
 
         return jsonify(final_table), 200
 
