@@ -33,7 +33,7 @@ const timeLabels = range(0, 24).flatMap(item => [padTime(`${item}:00`), padTime(
 
 
 function getWorkerRequirementsGraphData(workerRequirementsData, selectedDay, selectedSkill) {
-  const filteredData = workerRequirementsData.filter(row => row.day === selectedDay && row.skill === selectedSkill);
+  const filteredData = workerRequirementsData.filter(row => row.day === selectedDay && selectedSkill.includes(row.skill));
   const data = new Array(timeLabels.length).fill(0);
   filteredData.forEach((current) => {
     const index = timeLabels.indexOf(padTime(current.start_time));
@@ -86,6 +86,7 @@ function WorkerRequirementsChart({ placementData, currentUser }) {
         const workerRequirements = data.find((item)=> item.type === 'worker_requirements')?.data;
         if (workerRequirements) {
           setWorkerRequirementsData(transformWorkerRequirementsData(workerRequirements));
+          
         } else {
           alert("Missing worker requirements data");
         }
@@ -95,11 +96,21 @@ function WorkerRequirementsChart({ placementData, currentUser }) {
     }
   }, [currentUser]);
 
+  // useEffect(()=> {
+  //   if (selectedSkills) {
+  //     createChart();
+
+  //   }
+  // }, [selectedSkills]);
+
   // Update allSkills when placementData changes or selectedDay changes
   useEffect(() => {
     if (placementData && placementData.length > 0) {
       const filteredSkills = [...new Set(placementData.filter(row => row.day === selectedDay).map(row => row.skill))];
       setAllSkills(filteredSkills);
+      if (filteredSkills && filteredSkills.length > 0) {
+        setSelectedSkills([filteredSkills[0]])
+      }
     }
   }, [placementData, selectedDay]);
 
@@ -109,13 +120,21 @@ function WorkerRequirementsChart({ placementData, currentUser }) {
   };
 
   // Watch for changes in selected skills
-  const handleSkillChange = (event) => {
-    const selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
-    setSelectedSkills(selectedOptions);
-  };
+  const handleSkillChange = (e) => {
+    const { value, checked } = e.target;
+
+    if (checked) {
+        // Add the skill to selectedSkills if checked
+        setSelectedSkills((prevSkills) => [...prevSkills, value]);
+    } else {
+        // Remove the skill from selectedSkills if unchecked
+        setSelectedSkills((prevSkills) => prevSkills.filter((skill) => skill !== value));
+    }
+};
+
 
   useEffect(() => {
-    if (workerRequirementsData && placementData && workerRequirementsData.length > 0 && placementData.length > 0) {
+    if (selectedSkills && workerRequirementsData && placementData && workerRequirementsData.length > 0 && placementData.length > 0) {
       createChart();
     }
   }, [workerRequirementsData, placementData, selectedDay, selectedSkills]);
@@ -176,7 +195,7 @@ function WorkerRequirementsChart({ placementData, currentUser }) {
       <h1>Worker Requirements Chart</h1>
       <div>
         <label htmlFor="day">Select Day: </label>
-        <select value={selectedDay} onChange={handleDayChange}>
+        <select value={selectedDay} onChange={handleDayChange} >
           <option value="Sunday">Sunday</option>
           <option value="Monday">Monday</option>
           <option value="Tuesday">Tuesday</option>
@@ -186,13 +205,21 @@ function WorkerRequirementsChart({ placementData, currentUser }) {
           <option value="Saturday">Saturday</option>
         </select>
       </div>
-      <div>
+      <div style={{ paddingLeft: '20px'}}>
         <label htmlFor="skills">Select Skills: </label>
-        <select value={selectedSkills} onChange={handleSkillChange} >
         {allSkills.map((skill, index) => (
-        <option key={index} value={skill}>{skill}</option>
-        ))}
-        </select>
+    <div key={index}>
+        <label>
+            <input
+                type="checkbox"
+                value={skill}
+                checked={selectedSkills.includes(skill)}
+                onChange={(e) => handleSkillChange(e, skill)}
+            />
+            {skill}
+        </label>
+    </div>
+))}
       </div>
       <canvas ref={chartContainerRef} id="worker-requirements-chart" width="800" height="400"></canvas>
     </div>
