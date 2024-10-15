@@ -10,14 +10,20 @@ def register():
         data = request.json
         username = data.get('username')
         password = data.get('password')
-        companyName = data.get('companyName') 
+        companyName = data.get('companyName')
 
-        if not username or not password or not companyName:  
+        # Validate required fields
+        if not username or not password or not companyName:
             return jsonify({'error': 'Username, password, and company name are required'}), 400
 
         user = User()
 
-        if user.create_user(username, password, companyName):  
+        # Check if the user already exists
+        if user.find_user(username):
+            return jsonify({'error': 'Username already exists'}), 409  # HTTP 409 Conflict
+
+        # Create user if the username does not exist
+        if user.create_user(username, password, companyName):
             return jsonify({'message': 'User registered successfully'}), 201
         else:
             return jsonify({'error': 'Failed to register user'}), 500
