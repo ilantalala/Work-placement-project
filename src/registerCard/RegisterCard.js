@@ -1,23 +1,22 @@
 import "./RegisterCard.css"
 import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import logoImg from './login&register.png';
 
 function RegisterCard({ users, setUsers }) {
-
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
- 
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Perform validation checks
     if (!username || !password || !confirmPassword || !displayName || !companyName) {
       setErrorMessage('Please fill all the fields.');
@@ -29,28 +28,26 @@ function RegisterCard({ users, setUsers }) {
       setErrorMessage('Password should contain both letters and digits.');
     } else {
       try {
-        const response = await fetch('http://localhost:5000/api/register', { // Change this URL
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ username, password, displayName, companyName }),
+        const response = await axios.post('http://localhost:5000/api/register', {
+          username,
+          password,
+          displayName,
+          companyName
         });
-  
-        if (response.ok) {
+
+        if (response.status === 200) {
           // Registration successful, redirect to login screen
           navigate('/');
         } else {
           // Registration failed, display error message
-          const data = await response.json();
-          setErrorMessage(data.message);
+          setErrorMessage(response.data.message || 'Registration failed.');
         }
       } catch (error) {
         console.error('Error registering user:', error);
-        setErrorMessage('An error occurred while registering. Please try again.');
+        setErrorMessage(error?.response?.data?.message || 'An error occurred while registering. Please try again.');
       }
     }
-  };  
+  };
 
 
   return (
