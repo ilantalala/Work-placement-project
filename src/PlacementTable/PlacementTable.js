@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import './PlacementTable.css';
 import { Button  } from '@mui/material';
 import { EditableTable } from './EditableTable';
+import { CreateScheduleModal } from './CreateScheduleModal';
 
 const PlacementTable = ({ loading, placementData, currentUser }) => {
     const [rows, setRows] = useState(placementData);
@@ -27,7 +28,12 @@ const PlacementTable = ({ loading, placementData, currentUser }) => {
          <div className="placement-table-container">
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '12px'}}>
                 <h2>Placement Table</h2>
-                <Button variant="contained" onClick={onSubmitChanges}> Save changes </Button>
+                <div style={{ display: 'flex', gap: '24px'}}>
+                    <CreateScheduleModal currentUser={currentUser}>
+                        <Button variant="contained" color="success"> Create Schedule </Button>
+                    </CreateScheduleModal>
+                    <Button variant="contained" onClick={onSubmitChanges}> Save changes </Button>
+                </div>
              </div>
              {loading ? "Loading placement data...." : rows && rows.length > 0 ? (
              <div>

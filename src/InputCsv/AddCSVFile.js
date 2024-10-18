@@ -6,7 +6,7 @@ const validateCSVHeaders = (data, type) => {
     const headers = Object.keys(data[0]);
     const missingHeaders = requiredHeaders[type].filter(header => !headers.includes(header));
     if (missingHeaders.length > 0) {
-      alert(`Missing required headers in ${type}:`, missingHeaders);
+      alert(`Missing required headers in ${type}: ${missingHeaders.join(',')}`);
       return false;
     }
     return true;
