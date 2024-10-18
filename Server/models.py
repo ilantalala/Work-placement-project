@@ -145,3 +145,64 @@ class Shifts:
             # If the shifts collection does not exist, create it
             db.create_collection('shifts')
         return db.shifts
+class Schedule:
+    def get_user_schedule(self, currentUser):
+        try:
+            schedule = self.get_schedule_collection()
+            schedules = schedule.find({'identifier': currentUser})
+            return schedules
+        except Exception as e:
+            print(f"Error finding schedule: {e}")
+            return None
+    def add_schedule(self,currentUser,scheduleDate):
+        if not currentUser:
+            raise ValueError("currentUser cannot be None")
+        
+        if not scheduleDate:
+            raise ValueError("scheduleDate cannot be None")
+        try:
+            # 1. get the shifts (placement data) from db
+            # 2. get the workers (employeeSkills) from db
+            # create a schedule for the user (mock)
+            # save in db: { workers, shifts, schedule, date, identifier }
+
+            # Get date 
+            start_date = scheduleDate[0]
+            end_date = scheduleDate[1]
+
+            # Get the shifts collection
+            shifts_collection = Shifts().get_shifts_collection()
+            shifts_document = shifts_collection.find_one({'identifier': currentUser})
+            shifts = shifts_document['data']
+
+            # Get the files collection
+            files_collection = Files().get_files_collection()
+            files_document = files_collection.find_one({'identifier': currentUser, 'type': "employee_skill"})
+            employee_skill = files_document['data']
+
+            print("tomtom shifts", shifts)
+            print("tomtom employee_skill", employee_skill)
+
+            # Create a schedule for the user
+            schedule = []
+
+            # Get the schedule collection
+            schedule_collection = self.get_schedule_collection()
+
+            # Upsert the schedule data
+            schedule_collection.update_one(
+                {'identifier': currentUser, 'start_date': start_date, 'end_date': end_date}, 
+                {'$set': { 'employee_skill': employee_skill, 'shifts': shifts, 'schedule': schedule }}, 
+                upsert=True 
+            )
+            new_schedule = schedule_collection.find_one({'identifier': currentUser, 'start_date': start_date, 'end_date': end_date})
+            return new_schedule
+        except Exception as e:
+            print(f"Error creating schedule: {e}")
+            return False
+    def get_schedule_collection(self):
+        db = mongo.db
+        if 'schedule' not in db.list_collection_names():
+            # If the schedule collection does not exist, create it
+            db.create_collection('schedule')
+        return db.schedule
