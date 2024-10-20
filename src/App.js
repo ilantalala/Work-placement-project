@@ -47,9 +47,9 @@ function App() {
 
     <BrowserRouter>
       <Logout cleanCurrentUser={()=> setCurrentUser(null)} currentUser={CurrentUser} />
-        <Button href={"placement-table"}> Go to placement data</Button>
-        <Button href={"/"}> Create placement data </Button>
-        <Button href={"/worker-requirements-chart"} disabled={!placementData}> View chart </Button>
+        <Button href={"placement-table"} disabled={!CurrentUser}> Go to placement data</Button>
+        <Button href={"/"} disabled={!CurrentUser}> Create placement data </Button>
+        <Button href={"/worker-requirements-chart"} disabled={!placementData || !CurrentUser }> View chart </Button>
 
       <header></header>
       <Routes>
