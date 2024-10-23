@@ -1,6 +1,9 @@
 from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
+import pandas as pd
+import ast
+
 
 mongo = PyMongo()
 
@@ -180,12 +183,18 @@ class Schedule:
             files_document = files_collection.find_one({'identifier': currentUser, 'type': "employee_skill"})
             employee_skill = files_document['data']
 
-            print("tomtom shifts", shifts)
-            print("tomtom employee_skill", employee_skill)
+            # print("tomtom shifts", shifts)
+            # print("tomtom employee_skill", employee_skill)
 
             # Create a schedule for the user
-            schedule = []
+            ## TEMP CODE - UNTIL ALGORITHM IS FINISHED!!!
+            schedule_csv = pd.read_csv("final_shift_assignments.csv")
+            schedule = json_array = schedule_csv.to_dict(orient='records')
 
+            for item in schedule:
+                item['assigned_employees'] = ast.literal_eval(item['assigned_employees'])
+
+            # print("tomtom", schedule)
             # Get the schedule collection
             schedule_collection = self.get_schedule_collection()
 
