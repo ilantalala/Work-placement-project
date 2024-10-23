@@ -9,6 +9,7 @@ import PlacementTable from './PlacementTable/PlacementTable';
 import WorkerRequirementsChart from './WorkerRequirementsChart/WorkerRequirementsChart';
 import Logout from './Logout/Logout';
 import { FileManager } from './InputCsv/FileManager';
+import { ViewSchedule } from './Schedule/ViewSchedule';
 import { Button } from '@mui/material';
 
 function App() {
@@ -50,12 +51,15 @@ function App() {
         <Button href={"placement-table"} disabled={!CurrentUser}> Go to placement data</Button>
         <Button href={"/"} disabled={!CurrentUser}> Create placement data </Button>
         <Button href={"/worker-requirements-chart"} disabled={!placementData || !CurrentUser }> View chart </Button>
+        <Button href={"/schedule"} disabled={!CurrentUser}> Schedule </Button>
 
       <header></header>
       <Routes>
       <Route path="/" element={<LoginCard setCurrentUser={setCurrentUser} CurrentUser={CurrentUser} />} />
       <Route path="/register" element={<RegisterCard users={users} setUsers={setUsers} />} />
       <Route path="/inputCSV" element={<FileManager currentUser={CurrentUser} setPlacementData={setPlacementData} />} />
+
+      <Route path="/schedule" element={<ViewSchedule currentUser={CurrentUser} />} />
 
       <Route path="/oldInputCsv" element={<InputCSV  setPlacementData={setPlacementData} setWorkerRequirsData2={setWorkerRequirementsData} CurrentUser={CurrentUser}/>} />
       <Route path="/placement-table" element={<PlacementTable loading={loading} currentUser={CurrentUser} placementData={placementData} workerRequirementsData={workerRequirementsData} />} />
