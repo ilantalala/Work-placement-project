@@ -6,7 +6,7 @@ const UserContext = createContext();
 export const useAppContext = () => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUserContext must be used within a UserProvider');
+    throw new Error('useAppContext must be used within a AppProvider');
   }
   return context;
 };
@@ -14,9 +14,7 @@ export const useAppContext = () => {
 export const AppProvider = ({ children }) => {
     const navigate = useNavigate();
     const [currentUser, setCurrentUser] = useState(null);
-
-    useGetShifts({ currentUser });
-
+    
     const logout = () => {
         localStorage.removeItem('username');
         navigate('/')

@@ -2,23 +2,31 @@
 
 import React, {useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link , useNavigate } from 'react-router-dom';
 import './PlacementTable.css';
-import { Button  } from '@mui/material';
+import { Spin, Button, Tooltip } from 'antd';
+import { PlusOutlined, SaveOutlined } from '@ant-design/icons';
+
 import { EditableTable } from './EditableTable';
 import { CreateScheduleModal } from './CreateScheduleModal';
+import {  useGetShifts } from '../api/useGetShifts';
+import { axiosInstance } from '../api/axios';
+import { useAppContext } from '../context/AppContext';
 
-const PlacementTable = ({ loading, placementData, currentUser }) => {
+const PlacementTable = () => {
+    const { currentUser } = useAppContext(); 
+    const navigate = useNavigate();
+    const { data: placementData, isLoading: loading } = useGetShifts();
     const [rows, setRows] = useState(placementData);
     
 
     useEffect(()=> {
-        setRows(placementData)
+        if (placementData) setRows(placementData?.data)
     }, [placementData])
 
     const onSubmitChanges = async () => {
         try {
-            const result = await axios.put(`http://localhost:5000/api/${currentUser}/shifts`, { data: rows });
+            const result = await axiosInstance.put(`/${currentUser}/shifts`, { data: rows });
             console.log("result", result)
             alert("Changes saved successfully.")
         } catch (e) {
@@ -28,42 +36,28 @@ const PlacementTable = ({ loading, placementData, currentUser }) => {
      return (
          <div className="placement-table-container">
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '12px'}}>
-                <h2>Placement Table</h2>
+                <h2>Current shifts</h2>
                 <div style={{ display: 'flex', gap: '24px'}}>
-                    <CreateScheduleModal currentUser={currentUser}>
-                        <Button variant="contained" color="success"> Create Schedule </Button>
-                    </CreateScheduleModal>
-                    <Button variant="contained" onClick={onSubmitChanges}> Save changes </Button>
+                <Tooltip placement="left" title="Save current shifts">
+
+                    <Button color="primary" size="large" variant="solid" icon={<SaveOutlined/>} onClick={onSubmitChanges}/>
+                </Tooltip>
                 </div>
              </div>
-             {loading ? "Loading placement data...." : rows && rows.length > 0 ? (
+             {loading ?  
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: "60vh"}}> 
+               <Spin size="large" />
+                </div> : rows && rows.length > 0 ? (
              <div>
                 <EditableTable rows={rows} setRows={setRows}/>
-                 {/* <table>
-                     <thead>
-                     <tr>
-                         <th>Skill</th>
-                         <th>Day</th>
-                         <th>From Hour</th>
-                         <th>To Hour</th>
-                         <th>Number of Employees</th>
-                     </tr>
-                     </thead>
-                     <tbody>
-                     { placementData.map((item, index) => (
-                         <tr key={index}>
-                             <td>{item.skill}</td>
-                             <td>{item.day}</td>
-                             <td>{item.start}</td>
-                             <td>{item.end}</td>
-                             <td>{item.number_of_employ}</td>
-                         </tr>
-                     ))}
-                     </tbody>
-                 </table> */}
+                <div style={{ padding: '24px', display: 'flex', justifyContent: 'flex-end'}}>
+                <CreateScheduleModal currentUser={currentUser}>
+                    <Button color="primary" size="large" variant="solid" icon={<PlusOutlined/>}> Create Schedule </Button>
+                </CreateScheduleModal>
+                    </div>
              </div>
              ) : (
-                 <p>No placement data available.</p>
+                 <p>No placement data available. <span style={{ cursor: "pointer", textDecoration: "underline"}} onClick={()=> navigate('/')}> Click here to create one. </span> </p>
              )}
          </div>
      );

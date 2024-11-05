@@ -20,7 +20,7 @@ root.render(
         borderRadius: 2,
 
         // Alias Token
-        colorBgContainer: '#f6ffed',
+        // colorBgContainer: '#f6ffed',
       },
     }}
   >

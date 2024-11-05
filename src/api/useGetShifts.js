@@ -1,6 +1,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance} from './axios';
+import { useAppContext } from '../context/AppContext';
 
 const fetchShifts = async (currentUser) => {
   const response = await axiosInstance.get(`/${currentUser}/shifts`) 
@@ -8,7 +9,8 @@ const fetchShifts = async (currentUser) => {
 };
 
 // This hook will return the query object of the shifts 
-export const useGetShifts = ({ currentUser }) => {
+export const useGetShifts = () => {
+  const { currentUser } = useAppContext();
   return useQuery({
     queryKey: ['shifts', currentUser],
     queryFn: () => fetchShifts(currentUser),

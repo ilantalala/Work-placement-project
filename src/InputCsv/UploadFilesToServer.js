@@ -57,7 +57,7 @@ export const UploadFilesToServer = ({ csvData }) => {
     <>
      {contextHolder}
         <Button style={{margin: '24px', position: 'fixed', bottom: 0, right: 0 }} onClick={uploadFilesToServer} type="primary" color="danger" shape="round" icon={<UploadOutlined />} size={"large"}>
-        Upload data to server
+        Create shifts
       </Button>
     </>
   );

@@ -1,7 +1,8 @@
 import * as React from 'react';
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Button from '@mui/material/Button';
+import { Button } from 'antd';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -9,6 +10,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import DatePicker, { DateObject } from "react-multi-date-picker"
+import { axiosInstance } from '../api/axios';
 import "react-multi-date-picker/styles/layouts/mobile.css"
 
 function getNextSunday() {
@@ -24,6 +26,15 @@ function getNextSunday() {
   
 export const CreateScheduleModal = ({ children, currentUser }) => {
   const navigate = useNavigate();
+  const {  mutate, isPending, isError } = useMutation({
+    mutationFn: ({ startTime, endTime }) => axiosInstance.post(`/${currentUser}/schedule`, { date: [startTime, endTime] }),
+    onSuccess: () => {
+      navigate('/schedule');
+    },
+    onError: () => {
+      alert("Failed to create schedule. try again.");
+    }
+  });
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState([]);
   const handleClickOpen = () => {
@@ -45,15 +56,7 @@ export const CreateScheduleModal = ({ children, currentUser }) => {
     startTime.setUTCHours(0, 0, 0, 0);
     endTime.setUTCHours(0, 0, 0, 0); 
     
-    try {
-
-      const result = await axios.post(`http://localhost:5000/api/${currentUser}/schedule`, { date: [startTime, endTime] });
-      navigate('/schedule');
-    } catch (e) {
-      console.error(e);
-      alert("Failed to create schedule. try again.");
-    }
-
+    mutate({ startTime, endTime });
   }
 
   return (
@@ -87,8 +90,8 @@ export const CreateScheduleModal = ({ children, currentUser }) => {
 
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Close</Button>
-          <Button type="submit" color="success" variant="contained" onClick={onCreateSchedule}>Create</Button>
+          <Button onClick={handleClose} size="large" >Close</Button>
+          <Button loading={isPending} type="submit" color="primary" size="large" variant="solid" onClick={onCreateSchedule}>Create</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

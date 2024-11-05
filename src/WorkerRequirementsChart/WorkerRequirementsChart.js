@@ -3,7 +3,9 @@ import axios from 'axios';
 import { DAYS_OF_WEEK } from '../consts';
 import Chart from 'chart.js/auto';
 import { transformWorkerRequirementsData } from '../utils/transformWorkerRequirements';
-
+import { useGetShifts } from '../api/useGetShifts';
+import { useGetCsvData } from '../api/useGetCsvData';
+import { Checkbox, Select } from 'antd';
 function padTime(time) {
   return time.padStart(5, "0");
 }
@@ -72,40 +74,19 @@ function getGraphData(dataFromCsv, selectedDay, selectedSkills) {
 }
 
 
-function WorkerRequirementsChart({ placementData, currentUser }) {
-  const [workerRequirementsData, setWorkerRequirementsData]= useState([]);
+function WorkerRequirementsChart() {
+  const { data, isLoading: loading } = useGetShifts();
+  const { csvData = {}} = useGetCsvData(); // { employeeSkill, workerRequirements, shiftBasket } 
+  const { workerRequirements: workerRequirementsData } = csvData;
+  const placementData = data.data;
+
+  console.log("placementData", placementData)
   const chartContainerRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const [selectedDay, setSelectedDay] = useState('Sunday');
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [allSkills, setAllSkills] = useState([]);
-  const [schedules, setSchedules] = useState([]);
-  useEffect(() => {
-    if (currentUser) {
-      axios.get(`http://localhost:5000/api/${currentUser}/get_initial_data`)
-      .then(({ data })=> {
-        const workerRequirements = data.find((item)=> item.type === 'worker_requirements')?.data;
-        if (workerRequirements) {
-          setWorkerRequirementsData(transformWorkerRequirementsData(workerRequirements));
-          
-        } else {
-          alert("Missing worker requirements data");
-        }
-      }).catch((err)=> {
-        console.log("Error while trying to get existing user data...", err)
-      })
-    }
-  }, [currentUser]);
 
-  useEffect(() => {
-    if (currentUser) {
-        axios.get(`http://localhost:5000/api/${currentUser}/schedule`)
-            .then((response) => {
-                console.log(response.data);
-                setSchedules(response.data);
-            })
-    }
-}, [currentUser])
   // useEffect(()=> {
   //   if (selectedSkills) {
   //     createChart();
@@ -204,28 +185,23 @@ function WorkerRequirementsChart({ placementData, currentUser }) {
     <div>
       <h1>Worker Requirements Chart</h1>
       <div>
-        <label htmlFor="day">Select Day: </label>
-        <select value={selectedDay} onChange={handleDayChange} >
+        <p htmlFor="day"><b>Select Day: </b></p>
+        {/* <select value={selectedDay} onChange={handleDayChange} >
           {DAYS_OF_WEEK.map((day, index) => (
             <option key={index} value={day}>{day}</option>
           ))}
-        </select>
+        </select> */}
+        <Select
+      value={selectedDay}
+      style={{ width: 120 }}
+      onChange={setSelectedDay}
+      options={DAYS_OF_WEEK.map((v)=> ({ value: v, label: v}))}
+    />
+
       </div>
-      <div style={{ paddingLeft: '20px'}}>
-        <label htmlFor="skills">Select Skills: </label>
-        {allSkills.map((skill, index) => (
-    <div key={index}>
-        <label>
-            <input
-                type="checkbox"
-                value={skill}
-                checked={selectedSkills.includes(skill)}
-                onChange={(e) => handleSkillChange(e, skill)}
-            />
-            {skill}
-        </label>
-    </div>
-))}
+      <div style={{ padding: '10px 0px'}}>
+        <p htmlFor="skills"><b>Select Skills: </b></p>
+        <Checkbox.Group value={selectedSkills} options={allSkills.map((i)=> ({ label: i, value: i}))} defaultValue={['Apple']} onChange={setSelectedSkills} />
       </div>
       <canvas ref={chartContainerRef} id="worker-requirements-chart" width="800" height="400"></canvas>
     </div>

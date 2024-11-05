@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import _ from 'lodash';
+import { Spin } from 'antd';
 import { format } from 'date-fns';
 import { DAYS_OF_WEEK } from '../consts';
 import { ScheduleTable } from './ScheduleTable';
 import Autocomplete from '@mui/material/Autocomplete';
 import { DateObject, Calendar } from "react-multi-date-picker"
-
+import { useGetSchedule} from '../api/useGetSchedule';
 import TextField from '@mui/material/TextField';
 import './style.css';
 
@@ -46,10 +47,8 @@ const filterByEmployee = (data, employeeName) => {
 };
 
 export const ViewSchedule = ({ currentUser }) => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [schedules, setSchedules] = useState([]);
+    const { data: schedules, isLoading } = useGetSchedule();
     const [currentScheduleDay, setCurrentScheduleDay] = useState(new DateObject().format());
-    const [choosenDay, setChoosenDay] = useState('Sunday');
     const [selectedEmployee, setSelectedEmployee] = useState("");
 
     const hasScheduleInThisDate = (currDate) => {
@@ -60,27 +59,8 @@ export const ViewSchedule = ({ currentUser }) => {
         });
     }
 
-    useEffect(() => {
-        if (currentUser) {
-            axios.get(`http://localhost:5000/api/${currentUser}/schedule`)
-                .then((response) => {
-                    console.log(response.data);
-                    setSchedules(response.data);
-                    setIsLoading(false);
-                })
-        }
-    }, [currentUser])
-
-    const days = schedules?.map((schedule) => {
-        const date = new Date(schedule?.start_date);
-        const end_date = new Date(schedule?.end_date);
-
-        return { startDate: format(date, 'dd/MM/yyyy'), endDate: format(end_date, 'dd/MM/yyyy') };
-    });
-
     const scheduleByDay = useMemo(() => {
-
-        const schedule = schedules.find(({ start_date, end_date }) => {
+        const schedule = schedules?.find(({ start_date, end_date }) => {
             const isAfterStartDate = new DateObject(new Date(start_date)).format() <= new DateObject(currentScheduleDay).format();
             const isBeforeEndDate = new DateObject(new Date(end_date)).format() >= new DateObject(currentScheduleDay).format();
             return isAfterStartDate && isBeforeEndDate
@@ -91,13 +71,6 @@ export const ViewSchedule = ({ currentUser }) => {
     }, [schedules, currentScheduleDay])
 
     const shiftsBySkill = scheduleByDay ? _.groupBy(scheduleByDay, 'skill') : {}
-    const allEmployeesNames = scheduleByDay ? _.groupBy(scheduleByDay, 'skill') : {}
-
-    // console.log("data", schedules, days)
-    // console.log("scheduleByDate", scheduleByDate)
-    // console.log("scheduleByDay", scheduleByDay)
-    // console.log("shiftsBySkill", shiftsBySkill)
-
 
     const uniqueEmployeeNames = useMemo(() => {
         const employees = new Set();
@@ -124,16 +97,16 @@ export const ViewSchedule = ({ currentUser }) => {
     }, [selectedEmployee, shiftsBySkill]);
 
 
-    // Function to filter shifts by selected employee
-    if (isLoading) {
-        return <div>Loading...</div>
-    }
-
     console.log("currentScheduleDay", currentScheduleDay)
 
     console.log("schedules", scheduleByDay)
     return (
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', flexDirection: "column" }}>
+            <h2>View Schedule</h2>
+            { isLoading ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: "60vh"}}> 
+            <Spin size="large" />
+        </div> : <div style={{ display: 'flex'}}>
+        
             <div style={{ padding: '24px'}}>
                 <Calendar
                     value={currentScheduleDay}
@@ -167,6 +140,7 @@ export const ViewSchedule = ({ currentUser }) => {
                     <div style={{ padding: '24px', textAlign: 'center', flex: 1}}><b>No shifts for this day.</b> <br /> Please try to choose a another date.</div>}
 
             </div>
+            </div>}
         </div>
     )
 }
