@@ -21,3 +21,65 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+
+# PYTHON
+# Python files in Server directory
+Server/__pycache__/
+Server/*/__pycache__/
+Server/*.py[cod]
+Server/*.pyo
+Server/*.pyd
+Server/*.egg-info/
+Server/.eggs/
+Server/env/
+Server/venv/
+Server/.env
+Server/.pytest_cache/
+Server/.mypy_cache/
+
+# Common Python directories and files
+*.py[cod]
+__pycache__/
+*.so
+*.pyd
+*.pyo
+*.db
+*.sqlite3
+*.log
+
+# Virtual environment
+env/
+venv/
+.venv/
+ENV/
+
+# Python packaging
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+
+# Byte-compiled Python files
+*.pyc
+*.pyo
+*.pyd
+
+# IDE and editor-specific files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Tests
+.pytest_cache/
+
+# Mypy
+.mypy_cache/
+
+# Coverage
+.coverage
+coverage.xml
+htmlcov/

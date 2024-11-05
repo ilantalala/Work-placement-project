@@ -60,9 +60,6 @@ const PlacementTable = ({ loading, placementData, currentUser }) => {
                      ))}
                      </tbody>
                  </table> */}
-                 <Link to={{ pathname: "/worker-requirements-chart" }}>
-                         <button>View Worker Requirements Chart</button>
-                 </Link>
              </div>
              ) : (
                  <p>No placement data available.</p>

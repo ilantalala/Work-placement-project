@@ -1,5 +1,6 @@
 import * as React from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -22,6 +23,7 @@ function getNextSunday() {
   }
   
 export const CreateScheduleModal = ({ children, currentUser }) => {
+  const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState([]);
   const handleClickOpen = () => {
@@ -43,7 +45,14 @@ export const CreateScheduleModal = ({ children, currentUser }) => {
     startTime.setUTCHours(0, 0, 0, 0);
     endTime.setUTCHours(0, 0, 0, 0); 
     
-    const result = await axios.post(`http://localhost:5000/api/${currentUser}/schedule`, { date: [startTime, endTime] });
+    try {
+
+      const result = await axios.post(`http://localhost:5000/api/${currentUser}/schedule`, { date: [startTime, endTime] });
+      navigate('/schedule');
+    } catch (e) {
+      console.error(e);
+      alert("Failed to create schedule. try again.");
+    }
 
   }
 
