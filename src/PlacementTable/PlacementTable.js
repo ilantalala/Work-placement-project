@@ -10,6 +10,7 @@ import { CreateScheduleModal } from './CreateScheduleModal';
 
 const PlacementTable = ({ loading, placementData, currentUser }) => {
     const [rows, setRows] = useState(placementData);
+    
 
     useEffect(()=> {
         setRows(placementData)

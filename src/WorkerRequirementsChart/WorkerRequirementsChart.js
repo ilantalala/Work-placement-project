@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import { DAYS_OF_WEEK } from '../consts';
 import Chart from 'chart.js/auto';
 import { transformWorkerRequirementsData } from '../utils/transformWorkerRequirements';
 
@@ -78,7 +79,7 @@ function WorkerRequirementsChart({ placementData, currentUser }) {
   const [selectedDay, setSelectedDay] = useState('Sunday');
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [allSkills, setAllSkills] = useState([]);
-
+  const [schedules, setSchedules] = useState([]);
   useEffect(() => {
     if (currentUser) {
       axios.get(`http://localhost:5000/api/${currentUser}/get_initial_data`)
@@ -96,6 +97,15 @@ function WorkerRequirementsChart({ placementData, currentUser }) {
     }
   }, [currentUser]);
 
+  useEffect(() => {
+    if (currentUser) {
+        axios.get(`http://localhost:5000/api/${currentUser}/schedule`)
+            .then((response) => {
+                console.log(response.data);
+                setSchedules(response.data);
+            })
+    }
+}, [currentUser])
   // useEffect(()=> {
   //   if (selectedSkills) {
   //     createChart();
@@ -196,13 +206,9 @@ function WorkerRequirementsChart({ placementData, currentUser }) {
       <div>
         <label htmlFor="day">Select Day: </label>
         <select value={selectedDay} onChange={handleDayChange} >
-          <option value="Sunday">Sunday</option>
-          <option value="Monday">Monday</option>
-          <option value="Tuesday">Tuesday</option>
-          <option value="Wednesday">Wednesday</option>
-          <option value="Thursday">Thursday</option>
-          <option value="Friday">Friday</option>
-          <option value="Saturday">Saturday</option>
+          {DAYS_OF_WEEK.map((day, index) => (
+            <option key={index} value={day}>{day}</option>
+          ))}
         </select>
       </div>
       <div style={{ paddingLeft: '20px'}}>

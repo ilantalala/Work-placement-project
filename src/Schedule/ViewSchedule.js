@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import _ from 'lodash';
 import { format } from 'date-fns';
+import { DAYS_OF_WEEK } from '../consts';
 import { ScheduleTable } from './ScheduleTable';
 import Autocomplete from '@mui/material/Autocomplete';
 import { DateObject, Calendar } from "react-multi-date-picker"
@@ -9,8 +10,22 @@ import { DateObject, Calendar } from "react-multi-date-picker"
 import TextField from '@mui/material/TextField';
 import './style.css';
 
+// 3 useSomething:
+// 1. useEffect -> do something, everyttime [state1, state2] changes
+// 2. useMemo -> calculate value , everytime [state1, state2] changes
+// example:
+// const sum = useMemo(() => {
+//     return calculateSum(num1, num2);
+// }, [num1, num2])
 
-const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+// 3. useCallback -> return a function, everytime [state1, state2] changes
+// example:
+// const handleSum = useCallback(() => {
+//     return () => {
+//         return num1 + num2;
+//     }
+// }, [])
+// handleSum()
 
 const filterByEmployee = (data, employeeName) => {
     const filteredData = {};
@@ -149,7 +164,7 @@ export const ViewSchedule = ({ currentUser }) => {
             <div style={{ flex: 1, display: 'flex', alignItems: 'center'}}>
                 {currentScheduleDay && Object.values(filteredData)?.length > 0 ?
                     <ScheduleTable shiftsBySkill={filteredData} /> :
-                    <div style={{ padding: '24px', textAlign: 'center', flex: 1}}><b>No shifts for this day.</b> <br /> Please try to choose a different date.</div>}
+                    <div style={{ padding: '24px', textAlign: 'center', flex: 1}}><b>No shifts for this day.</b> <br /> Please try to choose a another date.</div>}
 
             </div>
         </div>
