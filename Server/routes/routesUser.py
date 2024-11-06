@@ -2,7 +2,7 @@
 
 from flask import Blueprint
 
-from logic.logicUser import register, login, verify_token
+from logic.logicUser import register, login, verify_token, get_user_by_name
 
 # Create a Blueprint for routes
 routes_user = Blueprint('routes_user', __name__)
@@ -19,3 +19,7 @@ def login_route():
 @routes_user.route('/api/verify_token', methods=['POST'])
 def verify_token_route():
      return verify_token()
+
+@routes_user.route('/api/user/<username>', methods=['GET'])
+def get_user(username):
+     return get_user_by_name(username)
