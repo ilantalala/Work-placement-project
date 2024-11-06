@@ -4,8 +4,8 @@ import { useAppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { axiosInstance} from './axios';
 
-const doLogin = async ({ username, password, companyName }) => {
-  const response = await axiosInstance.post(`/login`,  { username, password, companyName }) 
+const doLogin = async ({ username, password }) => {
+  const response = await axiosInstance.post(`/login`,  { username, password }) 
   return response.data; 
 };
 

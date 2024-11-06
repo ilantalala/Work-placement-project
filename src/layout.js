@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   DesktopOutlined,
   FileOutlined,
   PieChartOutlined,
   TeamOutlined,
   UserOutlined,
+  SmileFilled
 } from '@ant-design/icons';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
-import LoginCard from './LoginCard/LoginCard';
+import { CalendarTwoTone} from '@ant-design/icons';
+import { Login } from './Login';
+import { Profile } from './Profile';
+import { Register } from './Register';
 import RegisterCard from './registerCard/RegisterCard';
 import InputCSV from './InputCsv/InputCSV';
 import PlacementTable from './PlacementTable/PlacementTable';
@@ -54,12 +58,15 @@ export const AppLayout = () => {
     navigate(key);
   }
 
-  console.log("aaa", currentUser)
+  const menuItems = useMemo(()=> {
+    return [getItem(`Welcome, ${currentUser}!`, '/profile', <SmileFilled />), ...items]
+  }, [currentUser])
+
   if (!currentUser) {
     return (
     <Routes>
-        <Route path="/" element={<LoginCard />} />
-        <Route path="/register" element={<RegisterCard />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
     </Routes>
     );
   }
@@ -70,12 +77,18 @@ export const AppLayout = () => {
       }}
     >
       <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-        <div className="demo-logo-vertical" />
-        <Menu theme="dark" defaultSelectedKeys={['/']} mode="inline" onClick={onMenuClick} items={items} />
+        <div style={{ display: 'flex', gap: '12px', padding: '8px', color: 'white', fontSize: "22px",  fontFamily: 'serif', alignItems: 'center'}}>
+          <CalendarTwoTone  color="red" twoToneColor="#5a54f9" style={{ fontSize: "32px" , }} />
+          ShiftAssign
+        </div>
+        <Menu theme="dark" defaultSelectedKeys={['/']} mode="inline" onClick={onMenuClick} items={menuItems} />
+
       </Sider>
       <Layout style={{ padding: '16px'}}>
         <Routes>
             <Route path="/" element={<FileManager />} />
+            <Route path="/profile" element={<Profile />} />
+
             <Route path="/schedule" element={<ViewSchedule />} />
             <Route path="/oldInputCsv" element={<InputCSV />} />
             <Route path="/placement-table" element={<PlacementTable />} />
