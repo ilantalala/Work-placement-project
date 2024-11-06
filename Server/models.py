@@ -8,11 +8,11 @@ import ast
 mongo = PyMongo()
 
 class User:
-    def create_user(self, username, password, company_name):
+    def create_user(self, username, password, company_name, display_name):
         try:
             users = self.get_users_collection()
             hashed_password = generate_password_hash(password)
-            users.insert_one({'username': username, 'password': hashed_password, 'company_name': company_name})  # Include company_name field
+            users.insert_one({'username': username, 'password': hashed_password, 'company_name': company_name, 'display_name': display_name})  # Include company_name field
             return True
         except Exception as e:
             print(f"Error creating user: {e}")
@@ -34,6 +34,14 @@ class User:
             # If the users collection does not exist, create it
             db.create_collection('users')
         return db.users
+    def find_user_by_name(self, user_name):
+        try:
+            users = self.get_users_collection()
+            user_document = users.find_one({'username': user_name})
+            return user_document
+        except Exception as e:
+            print(f"Error finding user: {e}")
+            return None
         
 class Files:
     def add_files(self,currentUser,employee_skill,worker_requirements,shift_basket):

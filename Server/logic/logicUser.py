@@ -11,6 +11,8 @@ def register():
         username = data.get('username')
         password = data.get('password')
         companyName = data.get('companyName')
+        displayName = data.get('displayName')
+
 
         # Validate required fields
         if not username or not password or not companyName:
@@ -23,7 +25,7 @@ def register():
             return jsonify({'error': 'Username already exists'}), 409  # HTTP 409 Conflict
 
         # Create user if the username does not exist
-        if user.create_user(username, password, companyName):
+        if user.create_user(username, password, companyName, displayName):
             return jsonify({'message': 'User registered successfully'}), 201
         else:
             return jsonify({'error': 'Failed to register user'}), 500
@@ -62,3 +64,13 @@ def verify_token():
         return jsonify({'error': 'Token has expired'}), 401
     except jwt.InvalidTokenError:
         return jsonify({'error': 'Invalid token'}), 401
+
+def get_user_by_name(username):
+    try: 
+        user = User()
+        user_data = user.find_user_by_name(username)
+        user_data['_id'] = str(user_data['_id'])
+
+        return jsonify(user_data), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

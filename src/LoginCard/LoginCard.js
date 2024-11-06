@@ -2,10 +2,17 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import logoImg from './login&register.png';
+import {useLogin} from '../api/useLogin';
 import './LoginCard.css'
 
 
 function LoginCard({setCurrentUser,CurrentUser}) {
+  const { mutate, isError, isPending } = useLogin({
+    onError: (error) => {
+      console.error('Error logging in:', error);
+      setErrorMessage(error?.response?.data?.error || 'An error occurred while logging in. Please try again.');
+    }
+  });
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [companyName, setCompanyName] = useState('');
@@ -23,19 +30,9 @@ function LoginCard({setCurrentUser,CurrentUser}) {
     e.preventDefault();
   
     if (!username || !password || !companyName) {
-      setErrorMessage('Please fill all fields.');
-    } else {
-      try {
-        const data = await axios.post('http://localhost:5000/api/login', { username, password, companyName });
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('username', username);
-        setCurrentUser(username);
-        navigate('/inputCSV');
-      } catch (error) {
-        console.error('Error logging in:', error);
-        setErrorMessage(error?.response?.data?.error || 'An error occurred while logging in. Please try again.');
-      }
-    }
+      return setErrorMessage('Please fill all fields.');
+    } 
+    await mutate({ username, password, companyName });
   };
 
   return (

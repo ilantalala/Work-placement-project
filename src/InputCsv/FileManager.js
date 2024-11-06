@@ -5,60 +5,47 @@ import { useNavigate } from 'react-router-dom';
 import { AddCSVFileButton } from './AddCSVFile';
 import { AddFilesModal } from './AddFilesModal';
 import CustomTabPanel from './CustomTabPanel';
+import { UploadFilesToServer } from './UploadFilesToServer';
+import { useGetCsvData } from '../api/useGetCsvData';
 
 export const FileManager = ({ currentUser ,setPlacementData}) => {
-    const navigate = useNavigate();
     const [value, setValue] = useState(0);
-    const [initialData, setInitialData] = useState({});
+    const { csvData, setCsvData} = useGetCsvData(); // { employeeSkill, workerRequirements, shiftBasket } 
+
     const handleChange = (_, newValue) => {
         setValue(newValue)
     }
 
     const setData = (key, value)=> {
-        setInitialData(p => ({...p, [key]: value}))
+        csvData(p => ({...p, [key]: value}))
     }
-    useEffect(() => {
-        if (currentUser) {
-          fetch(`http://localhost:5000/api/${currentUser}/get_initial_data`)
-          .then((res) => res.json())
-          .then((data)=> {
-            console.log("data", data)
-            const employeeSkill = data.find((item)=> item.type === 'employee_skill')?.data;
-            const workerRequirements = data.find((item)=> item.type === 'worker_requirements')?.data;
-            const shiftBasket = data.find((item)=> item.type === 'shift_basket')?.data;
-            setInitialData({ employeeSkill, workerRequirements, shiftBasket })
-          }).catch((err)=> {
-            console.log("Error while trying to get existing user data...", err)
-          })
-        } else {
-          navigate('/')
-        }
-      }, [currentUser]);
-
-      console.log("initialData", initialData)
 
     return (
         <>
+        <div style={{ display: 'flex', justifyContent: 'space-between'}}>
+                <h3> Create new shifts by files</h3>
+                <AddFilesModal setCsvData={setCsvData} />
+            </div>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                     <Tab label="Employee Skill Table" />
                     <Tab label="Worker Requirements" />
                     <Tab label="Shift Basket"  />
                 </Tabs>
-                <AddFilesModal setPlacementData={setPlacementData} initialData={initialData} setInitialData={setInitialData} currentUser={currentUser} />
             </Box>
             <CustomTabPanel value={value} index={0}>
-                <AddCSVFileButton name="employeeSkill" setData={setData}/>
-                <Table data={initialData?.employeeSkill} />
+                <AddCSVFileButton name="employeeSkill" title="Add employee skill CSV" setData={setData}/>
+                <Table data={csvData?.employeeSkill} />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-                <AddCSVFileButton name="workerRequirements" setData={setData}/>
-                <Table data={initialData?.workerRequirements} />
+                <AddCSVFileButton name="workerRequirements" title="Add worker requirements CSV" setData={setData}/>
+                <Table data={csvData?.workerRequirements} />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={2}>
-                <AddCSVFileButton name="shiftBasket" setData={setData}/>
-                <Table data={initialData?.shiftBasket} />
+                <AddCSVFileButton name="shiftBasket" title="Add shift basket CSV" setData={setData}/>
+                <Table data={csvData?.shiftBasket} />
             </CustomTabPanel>
+            <UploadFilesToServer csvData={csvData}/>
         </>
     )
 }

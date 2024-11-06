@@ -1,0 +1,33 @@
+html, body {
+    padding: 0 !important;
+}
+
+.login {
+    height: 100vh;
+    width: 100vw;
+    background: rgb(90,84,249);
+    background: linear-gradient(111deg, rgba(90,84,249,1) 0%, rgba(85,174,228,1) 85%);
+
+    .login-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .login-card {
+            padding: 40px 15px;
+            min-width: 400px;
+            justify-content: center;
+            min-height: 600px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            flex-direction: column;            
+        
+            .card-inputs {
+                display: flex;
+                gap: 16px;
+                flex-direction: column;
+            }
+        }
+    }
+}

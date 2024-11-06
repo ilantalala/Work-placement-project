@@ -38,7 +38,7 @@ function EditToolbar(props) {
   return (
     <GridToolbarContainer>
       <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add record
+        Add new shift
       </Button>
     </GridToolbarContainer>
   );
