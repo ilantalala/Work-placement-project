@@ -3,28 +3,13 @@ import { requiredHeaders } from "./headers";
 import { UploadOutlined } from '@ant-design/icons';
 import { Button, message, Upload } from 'antd';
 
-const props = {
-    // name: 'file',
-    // action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
-    // headers: {
-    //   authorization: 'authorization-text',
-    // },
-    // onChange(info) {
-    //   if (info.file.status !== 'uploading') {
-    //     console.log(info.file, info.fileList);
-    //   }
-    //   if (info.file.status === 'done') {
-    //     message.success(`${info.file.name} file uploaded successfully`);
-    //   } else if (info.file.status === 'error') {
-    //     message.error(`${info.file.name} file upload failed.`);
-    //   }
-    // },
-  };
+const props = {};
 
   
 const validateCSVHeaders = (data, type) => {
     const headers = Object.keys(data[0]);
     const missingHeaders = requiredHeaders[type].filter(header => !headers.includes(header));
+    console.log(missingHeaders);
     if (missingHeaders.length > 0) {
       alert(`Missing required headers in ${type}: ${missingHeaders.join(',')}`);
       return false;
