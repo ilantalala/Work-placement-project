@@ -2,10 +2,18 @@ from pulp import *
 import pandas as pd
 from collections import defaultdict
 
-def optimize_shifts(input_hours_file="inputHours.csv", time_range_file="timeRange.csv"):
-    # Read data from CSV files into DataFrames
-    table2_df = pd.read_csv(input_hours_file)
-    table3_df = pd.read_csv(time_range_file)
+def optimize_shifts(table2_df, table3_df):
+    
+    """
+    Optimize shifts using DataFrames directly
+    Args:
+        table2_df (pd.DataFrame): Worker requirements DataFrame
+        table3_df (pd.DataFrame): Shift basket DataFrame
+    """
+    # No need to read CSV files as we already have DataFrames
+    # Remove these lines:
+    # table2_df = pd.read_csv(table2_df)
+    # table3_df = pd.read_csv(table3_df)
 
     prob = LpProblem("Shift_Optimization", LpMinimize)
 
@@ -33,7 +41,7 @@ def optimize_shifts(input_hours_file="inputHours.csv", time_range_file="timeRang
         start = time_to_minutes(row['start_time'])
         end = time_to_minutes(row['end_time'])
         skill = row['skill']
-        day = row['day']  # Now including the day
+        day = row['day']
         for time in range(start, end, 30):
             required_employees[(day, skill, time)] = row['number_of_employ']
 
@@ -56,7 +64,7 @@ def optimize_shifts(input_hours_file="inputHours.csv", time_range_file="timeRang
          for time in range(min_start_time, max_end_time, 30)], 
         lowBound=0)
 
-    # Create constraints for each half-hour interval, now including days
+    # Create constraints for each half-hour interval
     for day in set(table3_df['day']):
         for skill in set(table3_df['skill']):
             for time in range(min_start_time, max_end_time, 30):

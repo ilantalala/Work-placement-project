@@ -16,9 +16,10 @@ export const FileManager = ({ currentUser ,setPlacementData}) => {
         setValue(newValue)
     }
 
-    const setData = (key, value)=> {
-        csvData(p => ({...p, [key]: value}))
+    const setData = (key, value) => {
+        setCsvData(prevData => ({...prevData, [key]: value}));
     }
+
 
     return (
         <>

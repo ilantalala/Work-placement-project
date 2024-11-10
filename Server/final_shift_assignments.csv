@@ -1,9 +1,9 @@
 day,skill,start_time,end_time,cost_of_shift,number_of_employee,assigned_employees,start_datetime
-Sunday,WifiTech,7:00,10:00,50,10,"[' Jessica', ' Olivia', ' William', ' Mia', ' Dylan', ' Ilan2', ' Liam2', ' Mia3', ' Sophia3', ' Jackson2']",2024-11-06 07:00:00
-Tuesday,WifiTech,8:00,11:00,60,18,"[' Emily', ' Natalie', ' Daniel', ' Mason', ' Jack', ' Wyatt', ' Ilan4', ' Noah', ' Elijah2', ' Charlotte', ' Noah2', ' Jack2', ' William3', ' Lucas2', 'Unfilled', 'Unfilled', 'Unfilled', 'Unfilled']",2024-11-06 08:00:00
-Sunday,Engineer,8:30,11:30,70,20,"[' Sarah', ' Josh', ' Lauren', ' Hannah', ' Grace', ' Harper', ' Samuel', ' Zoe', ' Ilan', ' Mia2', ' Emma2', ' Mia4', ' Benjamin2', ' Ava4', ' Emma4', 'Unfilled', 'Unfilled', 'Unfilled', 'Unfilled', 'Unfilled']",2024-11-06 08:30:00
-Sunday,WifiTech,9:00,12:30,60,15,"[' Amy', ' Ryan', ' Ethan', ' Elijah', ' Evelyn', ' Leah', ' Max', ' Ethan2', ' Ava3', ' Ethan3', ' Mia6', ' Liam5', ' Grace3', ' Mia10', 'Unfilled']",2024-11-06 09:00:00
-Tuesday,WifiTech,9:30,12:30,70,20,"[' John', ' Alex', ' Emma', ' Benjamin', ' Jackson', ' Connor', ' Ilan3', ' Sophia2', ' James2', ' Harper2', ' Liam4', ' Ella', ' Mia7', ' Mia8', ' Emma5', 'Unfilled', 'Unfilled', 'Unfilled', 'Unfilled', 'Unfilled']",2024-11-06 09:30:00
-Tuesday,Guard,10:00,13:00,45,5,"[' Chris', ' Laura', ' Kate', ' James', ' Ava']",2024-11-06 10:00:00
-Monday,Handman,10:30,14:00,55,12,"[' David', ' Adam', ' Brandon', ' Sophia', ' Lucas', ' Owen', ' Olivia2', ' Isabella', ' William2', ' Emma3', ' Mia5', ' James3']",2024-11-06 10:30:00
-Monday,Handman,12:00,15:00,65,10,"[' Michael', ' Matt', ' Tom', ' Liam', ' Logan', ' Lily', ' Savannah', ' Ava2', ' Michael2', ' Grace2']",2024-11-06 12:00:00
+Sunday,WifiTech,7:00,10:00,50,10,"[' Jessica', ' Olivia', ' William', ' Mia', ' Dylan', ' Ilan2', ' Liam2', ' Mia3', ' Sophia3', ' Jackson2']",2024-11-10 07:00:00
+Tuesday,WifiTech,8:00,11:00,60,18,"[' Emily', ' Natalie', ' Daniel', ' Mason', ' Jack', ' Wyatt', ' Ilan4', ' Noah', ' Elijah2', ' Charlotte', ' Noah2', ' Jack2', ' William3', ' Lucas2', 'Unfilled', 'Unfilled', 'Unfilled', 'Unfilled']",2024-11-10 08:00:00
+Sunday,Engineer,8:30,11:30,70,20,"[' Sarah', ' Josh', ' Lauren', ' Hannah', ' Grace', ' Harper', ' Samuel', ' Zoe', ' Ilan', ' Mia2', ' Emma2', ' Mia4', ' Benjamin2', ' Ava4', ' Emma4', 'Unfilled', 'Unfilled', 'Unfilled', 'Unfilled', 'Unfilled']",2024-11-10 08:30:00
+Sunday,WifiTech,9:00,12:30,60,15,"[' Amy', ' Ryan', ' Ethan', ' Elijah', ' Evelyn', ' Leah', ' Max', ' Ethan2', ' Ava3', ' Ethan3', ' Mia6', ' Liam5', ' Grace3', ' Mia10', 'Unfilled']",2024-11-10 09:00:00
+Tuesday,WifiTech,9:30,12:30,70,20,"[' John', ' Alex', ' Emma', ' Benjamin', ' Jackson', ' Connor', ' Ilan3', ' Sophia2', ' James2', ' Harper2', ' Liam4', ' Ella', ' Mia7', ' Mia8', ' Emma5', 'Unfilled', 'Unfilled', 'Unfilled', 'Unfilled', 'Unfilled']",2024-11-10 09:30:00
+Tuesday,Guard,10:00,13:00,45,5,"[' Chris', ' Laura', ' Kate', ' James', ' Ava']",2024-11-10 10:00:00
+Monday,Handman,10:30,14:00,55,12,"[' David', ' Adam', ' Brandon', ' Sophia', ' Lucas', ' Owen', ' Olivia2', ' Isabella', ' William2', ' Emma3', ' James3', ' Olivia3']",2024-11-10 10:30:00
+Monday,Handman,12:00,15:00,65,11,"[' Michael', ' Matt', ' Tom', ' Liam', ' Logan', ' Lily', ' Savannah', ' Ava2', ' Michael2', ' Grace2', ' Mia5']",2024-11-10 12:00:00

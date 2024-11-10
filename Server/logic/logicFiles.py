@@ -1,8 +1,10 @@
 import math
 import uuid
+import pandas as pd
 from flask import jsonify, request
 from datetime import datetime, timedelta
 from models import Files, Shifts
+from first_placement_basic import optimize_shifts  
 
 def polish(data):
     def remove_r(text):
@@ -42,7 +44,7 @@ def filter_schedules_by_time(schedules, skill, day, start, end):
             filtered_schedules.append(schedule)
 
     return filtered_schedules
-
+#TO DELETE
 def calculate_average(schedules, time_ranges):
     try:
         new_array = []
@@ -66,32 +68,23 @@ def calculate_average(schedules, time_ranges):
     except Exception as e:
         return {"error": str(e)}
 
-
 def process_csv_content(csv_content):
     try:
-        # Split the content into lines
         lines = csv_content.strip().split('\n')
-
-        # Extract headers from the first line
         headers = [header.strip() for header in lines[0].split(',')]
-
-        # Process data from subsequent lines
+        
         data = []
         for line in lines[1:]:
             values = [value.strip() for value in line.split(',')]
-
-            # Create a dictionary using headers as keys and values as values
             entry = {headers[i]: values[i] for i in range(len(headers))}
             entry['_id'] = str(uuid.uuid4())
-
             data.append(entry)
 
         return data
 
     except Exception as e:
         print("Error processing CSV content:", e)
-        return [] # Return an empty list in case of an error
-
+        return []
 
 def upload_data():
     try:
@@ -100,7 +93,7 @@ def upload_data():
         # Get JSON data from the request
         data = request.get_json()
 
-        # Access data fields
+        # Access data fields and process them
         currentUser = data.get('currentUser')
         employee_skill_content = data.get('employeeSkillContent')
         worker_requirements_content = data.get('workerRequirementsContent')
@@ -119,33 +112,58 @@ def upload_data():
         worker_requirements_data = polish(worker_requirements_data)
         shift_basket_data = polish(shift_basket_data)
 
-        # Debugging logs
-        #print('Processed Employee Skill Data:', employee_skill_data)
-        #print('Processed Worker Requirements Data:', worker_requirements_data)
-        #print('Processed Shift Basket Data:', shift_basket_data)
-
         # Save data to MongoDB
-        print(currentUser)
         if files.add_files(currentUser, employee_skill_data, worker_requirements_data, shift_basket_data):
             print('Files saved successfully')
+            
+            try:
+                # Convert to pandas DataFrames
+                worker_requirements_df = pd.DataFrame(worker_requirements_data)
+                shift_basket_df = pd.DataFrame(shift_basket_data)
+
+                # Convert necessary columns to numeric
+                worker_requirements_df['number_of_employ'] = pd.to_numeric(worker_requirements_df['number_of_employ'])
+                
+                # Get optimized shifts
+                final_table, status, objective = optimize_shifts(worker_requirements_df, shift_basket_df)
+                
+                # Convert DataFrame to list and remove '_id' field
+                final_table_list = final_table.to_dict('records')
+                for shift in final_table_list:
+                    if '_id' in shift:
+                        del shift['_id']
+                
+                print("final_table_list:\n", final_table_list)
+                
+                # Insert the result
+                shift = Shifts()
+                shift.add_shifts(currentUser, final_table_list)
+
+                return jsonify({
+                    'message': 'Files saved successfully',
+                    'data': final_table_list
+                }), 200
+
+            except Exception as e:
+                print(f"Optimization error: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                return jsonify({
+                    'error': f'Optimization error: {str(e)}'
+                }), 500
         else:
-            print('Error: Failed to create files')
-
-        # Calculate average and return the result
-        final_table = calculate_average(worker_requirements_data, shift_basket_data)
-        
-        print("Final Table:", final_table)
-
-        # Insert the result ("best" shifts for this week) to the database 
-        shift = Shifts()
-        shift.add_shifts(currentUser, final_table)
-
-        return jsonify(final_table), 200
+            return jsonify({
+                'error': 'Error: Failed to create files'
+            }), 500
 
     except Exception as e:
-        print("Error details:", e)
-        return jsonify({"error": str(e)}), 
-        
+        print(f"Upload error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'error': f'Upload error: {str(e)}'
+        }), 500
+
 def get_initial_data(identifier):
     try:
         files = Files()
@@ -155,4 +173,3 @@ def get_initial_data(identifier):
     except Exception as e:
         print("Error details:", e)
         return jsonify({"error": str(e)}), 500
-       

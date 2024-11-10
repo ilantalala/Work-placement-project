@@ -1,7 +1,7 @@
 import pandas as pd
 from collections import defaultdict
 import random
-from first_placement_basic import optimize_shifts  # Make sure this import is correct
+from first_placement_basic import optimize_shifts  
 from datetime import datetime, timedelta
 #The algorithm first sort the shifts by their cost from high to low, if 2 shifts have the same cost they will be 
 # sorted by their amount of needed workers. then the algorithm will assign workers in cyclic.

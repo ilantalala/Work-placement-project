@@ -27,7 +27,7 @@ function EditToolbar(props) {
     const id = randomId();
     setRows((oldRows) => [
       ...oldRows,
-      { id, day: '', skill: '', start: '', end: '',  number_of_employ:''},
+      { id, day: '', skill: '', start_time: '', end_time: '',  number_of_employee:''},
     ]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
@@ -46,7 +46,7 @@ function EditToolbar(props) {
 
 export const EditableTable = ({ rows, setRows }) => {
   const [rowModesModel, setRowModesModel] = React.useState({});
-
+  
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true;
@@ -55,6 +55,7 @@ export const EditableTable = ({ rows, setRows }) => {
 
   const handleEditClick = (id) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+    
   };
 
   const handleSaveClick = (id) => () => {
@@ -98,21 +99,21 @@ export const EditableTable = ({ rows, setRows }) => {
       editable: true,
     },
     {
-      field: 'start',
+      field: 'start_time',
       headerName: 'Start time',
       type: 'string',
       width: 180,
       editable: true,
     },
     {
-        field: 'end',
+        field: 'end_time',
         headerName: 'End time',
         type: 'string',
         width: 180,
         editable: true,
     },
     {
-        field: 'number_of_employ',
+        field: 'number_of_employee',
         headerName: 'Number of employees',
         type: 'number',
         width: 180,
