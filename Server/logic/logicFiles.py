@@ -1,9 +1,11 @@
+#logicFiles.py
 import math
 import uuid
 import pandas as pd
 from flask import jsonify, request
 from datetime import datetime, timedelta
-from models import Files, Shifts
+from models.files_model import Files
+from models.shifts_model import Shifts
 from first_placement_basic import optimize_shifts  
 
 def polish(data):
@@ -44,30 +46,6 @@ def filter_schedules_by_time(schedules, skill, day, start, end):
             filtered_schedules.append(schedule)
 
     return filtered_schedules
-#TO DELETE
-def calculate_average(schedules, time_ranges):
-    try:
-        new_array = []
-        for shift in time_ranges:
-            start = shift["start_time"]
-            end = shift["end_time"]
-            skill = shift["skill"]
-            day = shift["day"]
-
-            filtered_schedules = filter_schedules_by_time(schedules, skill, day, start, end)
-
-            sum, counter = 0, 0
-            for schedule in filtered_schedules:
-                counter += 1
-                sum += int(schedule["number_of_employ"])
-
-            if counter > 0:
-                new_array.append({"skill": skill, "day": day, "start": start, "end": end, "number_of_employ": math.ceil(sum / counter)})
-        return new_array
-
-    except Exception as e:
-        return {"error": str(e)}
-
 def process_csv_content(csv_content):
     try:
         lines = csv_content.strip().split('\n')
