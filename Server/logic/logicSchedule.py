@@ -6,6 +6,7 @@ from models.shifts_model import Shifts
 import pandas as pd
 from datetime import datetime
 from second_placement_basic import assign_employees_to_shifts
+from second_placement_KPI1 import assign_employees_to_shifts_KPI1
 
 def polish_employee_skills(employee_skills_data):
     """Polish employee skills data to match required format"""

@@ -10,10 +10,7 @@ def optimize_shifts(table2_df, table3_df):
         table2_df (pd.DataFrame): Worker requirements DataFrame
         table3_df (pd.DataFrame): Shift basket DataFrame
     """
-    # No need to read CSV files as we already have DataFrames
-    # Remove these lines:
-    # table2_df = pd.read_csv(table2_df)
-    # table3_df = pd.read_csv(table3_df)
+ 
 
     prob = LpProblem("Shift_Optimization", LpMinimize)
 

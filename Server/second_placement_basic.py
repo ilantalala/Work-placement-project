@@ -6,8 +6,8 @@ from datetime import datetime
 def assign_employees_to_shifts(employee_skills_data, optimized_shifts):
     """
     Assign employees to shifts based on their skills and shift requirements.
-    First sorts shifts by number_of_employee, then by cost (cheapest first).
-    Assigns workers cyclically to each shift.
+    First sorts shifts by number_of_employee (most needed first), 
+    then by cost_of_shift (cheapest first).
     """
     try:
         # Convert employee_skills_data to DataFrame if needed
@@ -57,12 +57,15 @@ def assign_employees_to_shifts(employee_skills_data, optimized_shifts):
         print(optimized_shifts[['skill', 'number_of_employee', 'cost_of_shift']].head())
 
         # Changed sorting logic:
-        # 1. Create a temporary DataFrame for non-zero employee shifts
+        # 1. First separate shifts that need workers from those that don't
         non_zero_shifts = optimized_shifts[optimized_shifts['number_of_employee'] > 0].copy()
         zero_shifts = optimized_shifts[optimized_shifts['number_of_employee'] == 0].copy()
 
-        # 2. Sort non-zero shifts by cost (ascending) first
-        non_zero_shifts = non_zero_shifts.sort_values('cost_of_shift', ascending=True)
+        # 2. Sort non-zero shifts by number_of_employee (descending) and cost_of_shift (ascending)
+        non_zero_shifts = non_zero_shifts.sort_values(
+            ['number_of_employee', 'cost_of_shift'], 
+            ascending=[False, True]  # Descending for number_of_employee, ascending for cost
+        )
 
         # 3. Concatenate back with zero-employee shifts
         optimized_shifts = pd.concat([non_zero_shifts, zero_shifts])
@@ -77,7 +80,7 @@ def assign_employees_to_shifts(employee_skills_data, optimized_shifts):
         total_assignments_made = 0
         print(f"\nDEBUG: Total assignments needed: {total_assignments_needed}")
 
-        # Track assignments per day to prevent multiple shifts
+        # Track assignments per day to prevent multiple shifts per day
         daily_assignments = defaultdict(set)
 
         # Assign employees to shifts cyclically
@@ -87,7 +90,7 @@ def assign_employees_to_shifts(employee_skills_data, optimized_shifts):
             assignments_this_cycle = 0
             print(f"\nDEBUG: Starting cycle {cycle_count}")
 
-            # Only process shifts that need workers
+            # Process shifts ordered by number of employees needed and cost
             for index, shift in optimized_shifts[optimized_shifts['number_of_employee'] > 0].iterrows():
                 current_assignments = optimized_shifts.at[index, 'assigned_employees']
                 if len(current_assignments) >= int(shift['number_of_employee']):
@@ -99,7 +102,7 @@ def assign_employees_to_shifts(employee_skills_data, optimized_shifts):
                 # Get available employees for this skill who haven't been assigned today
                 available_employees = [
                     emp for emp in get_employees_with_skill(skill)
-                    if emp not in daily_assignments[day]
+                    if emp not in daily_assignments[day]  # Only check current day
                 ]
 
                 if available_employees:
@@ -108,7 +111,8 @@ def assign_employees_to_shifts(employee_skills_data, optimized_shifts):
                     daily_assignments[day].add(assigned_employee)
                     assignments_this_cycle += 1
                     total_assignments_made += 1
-                    print(f"DEBUG: Assigned {assigned_employee} to {skill} shift on {day} (cost: {shift['cost_of_shift']})")
+                    print(f"DEBUG: Assigned {assigned_employee} to {skill} shift on {day}")
+                    print(f"Workers needed: {shift['number_of_employee']}, Cost: {shift['cost_of_shift']}")
 
             print(f"DEBUG: Made {assignments_this_cycle} assignments in cycle {cycle_count}")
             if assignments_this_cycle == 0:
@@ -118,7 +122,7 @@ def assign_employees_to_shifts(employee_skills_data, optimized_shifts):
 
         # Fill remaining positions with "Unfilled"
         for index, shift in optimized_shifts.iterrows():
-            if shift['number_of_employee'] > 0:  # Only process shifts that need workers
+            if shift['number_of_employee'] > 0:
                 current_assignments = optimized_shifts.at[index, 'assigned_employees']
                 unfilled_count = int(shift['number_of_employee']) - len(current_assignments)
                 if unfilled_count > 0:
@@ -136,8 +140,8 @@ def assign_employees_to_shifts(employee_skills_data, optimized_shifts):
         print("\nDEBUG: Final assignments sample:")
         for _, shift in final_shifts[final_shifts['number_of_employee'] > 0].head().iterrows():
             print(f"Shift: {shift['skill']} on {shift['day']}")
-            print(f"Cost: {shift['cost_of_shift']}")
             print(f"Workers needed: {shift['number_of_employee']}")
+            print(f"Cost: {shift['cost_of_shift']}")
             print(f"Assigned: {shift['assigned_employees']}")
             print("---")
 
