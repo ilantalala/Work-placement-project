@@ -38,4 +38,26 @@ def create_schedule(identifier):
     except Exception as e:
         print("Error while creating schedule:", e)
         return jsonify({"error": str(e)}), 500
+def update_shifts(identifier, scheduleId, shiftId):
+    # ["emily", "john", "jane", "Unfilled", "Unfilled"]
+    # will accept scheduleId, shiftId, and employees list. 
+    # we need to update the employees list for the given shiftId in the given scheduleId
+    # and we need to search if the employees are in another shift in the same schedule, if so, remove them from that shift
+
+    try:
+        data = request.json
+        employees = data.get('employees')
+
+        if not employees:
+            return jsonify({"error": "Missing employees"}), 400
         
+        schedule = Schedule()
+        updated_schedule = schedule.update_shifts(identifier, id, shifts)
+        if updated_schedule:
+            updated_schedule['_id'] = str(updated_schedule['_id'])
+            return jsonify(updated_schedule), 200
+        else:
+            return jsonify({"error": "Error while updating shifts"}), 500
+    except Exception as e:
+        print("Error while updating shifts:", e)
+        return jsonify({"error": str(e)}), 500 

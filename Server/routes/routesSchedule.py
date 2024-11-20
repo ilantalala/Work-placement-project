@@ -13,3 +13,7 @@ def get_user_schedules(identifier):
 @routes_schedule.route('/api/<identifier>/schedule', methods=['POST'])
 def create_user_schedule(identifier):
      return create_schedule(identifier)
+
+@routes_schedule.route('/api/<identifier>/schedule/<id>/edit', methods=['PUT'])
+def edit_schedule_shifts(identifier, id):
+     return edit_schedule(identifier, id)

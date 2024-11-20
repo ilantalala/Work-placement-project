@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useGetShifts } from '../api/useGetShifts';
 import { useNavigate} from 'react-router-dom';
 const UserContext = createContext();
 

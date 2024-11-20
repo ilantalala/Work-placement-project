@@ -1,8 +1,5 @@
-// PlacementTable.js
-
 import React, {useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link , useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './PlacementTable.css';
 import { Spin, Button, Tooltip } from 'antd';
 import { PlusOutlined, SaveOutlined } from '@ant-design/icons';

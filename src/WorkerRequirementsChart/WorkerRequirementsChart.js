@@ -78,7 +78,7 @@ function WorkerRequirementsChart() {
   const { data, isLoading: loading } = useGetShifts();
   const { csvData = {}} = useGetCsvData(); // { employeeSkill, workerRequirements, shiftBasket } 
   const { workerRequirements: workerRequirementsData } = csvData;
-  const placementData = data.data;
+  const placementData = data?.data;
 
   console.log("placementData", placementData)
   const chartContainerRef = useRef(null);
@@ -87,14 +87,7 @@ function WorkerRequirementsChart() {
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [allSkills, setAllSkills] = useState([]);
 
-  // useEffect(()=> {
-  //   if (selectedSkills) {
-  //     createChart();
 
-  //   }
-  // }, [selectedSkills]);
-
-  // Update allSkills when placementData changes or selectedDay changes
   useEffect(() => {
     if (placementData && placementData.length > 0) {
       const filteredSkills = [...new Set(placementData.filter(row => row.day === selectedDay).map(row => row.skill))];

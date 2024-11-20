@@ -201,6 +201,7 @@ class Schedule:
 
             for item in schedule:
                 item['assigned_employees'] = ast.literal_eval(item['assigned_employees'])
+                item['id'] = str(uuid.uuid4())
 
             # print("tomtom", schedule)
             # Get the schedule collection
