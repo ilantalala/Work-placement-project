@@ -1,10 +1,11 @@
 import React from 'react';
-import Box from '@mui/material/Box';
 import _ from 'lodash';
 import Popover from '@mui/material/Popover';
-import Button from '@mui/material/Button';
-import { EditOutlined, TeamOutlined, DeleteOutlined, UserOutlined } from '@ant-design/icons';
-import { Card, Modal, List, Avatar, AutoComplete, Input, Flex } from 'antd';
+import { EditOutlined, TeamOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Card, Modal } from 'antd';
+import { useQueryClient } from '@tanstack/react-query';
+import { useDeleteShift } from '../api/useDeleteShift';
+import { EditScheduleShiftModal } from './EditScheduleShiftModal';
 
 
 const getColor = (employeesLength, number_of_employee) => {
@@ -47,9 +48,20 @@ const tableStyle = {
     transition: 'background-color 0.3s ease'
   };
 
-export const  ScheduleTable = ({ shiftsBySkill, employeeSkills }) => {
+export const  ScheduleTable = ({ shiftsBySkill, employeeSkills, scheduleId }) => {
     const [modalData, setModalData] = React.useState(null); // { day, start_time, end_time, skill }
+    const queryCache = useQueryClient();
 
+    const { mutate } = useDeleteShift({
+      onSuccess: () => {
+        queryCache.invalidateQueries(['schedule']);
+
+        alert("shift deleted successfully")
+      },
+      onError: () => {
+        alert("error deleting shift, please try again");
+      }
+    });
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [id, setId] = React.useState(null);
 
@@ -64,10 +76,6 @@ export const  ScheduleTable = ({ shiftsBySkill, employeeSkills }) => {
     };
   
     const columns = Object.keys(shiftsBySkill);
-
-    const currentModalData = modalData && shiftsBySkill[modalData?.skill]?.find(
-      (shift) => shift.day === modalData?.day && shift.start_time === modalData?.start_time && shift.end_time === modalData?.end_time
-    );
 
   return (
     <>
@@ -96,7 +104,22 @@ export const  ScheduleTable = ({ shiftsBySkill, employeeSkills }) => {
                     actions={[
                       <TeamOutlined key="employees"onClick={(e)=> handleClick(e,key)}  />,
                       <EditOutlined key="edit" onClick={(e)=> setModalData({ day, start_time, end_time, skill })}/>,
-                      <DeleteOutlined key="setting" />,
+                      <DeleteOutlined key="setting" onClick={(e)=> {
+                        Modal.warning({
+                          title: 'Are you sure you want to delete this shift?',
+                          content: 'This action cannot be undone.',
+                          okText: "Yes, delete shift",
+                          okType: "danger",
+                          cancelText: "Cancel",
+                          closable: true,
+                          onOk() {
+                            mutate({
+                              scheduleId,
+                              shiftId: shift.id
+                            })
+                          }
+                        });
+                      }} />,
                     ]} 
                     style={{ minWidth: 200, margin: "15px 0px"}}
                   >
@@ -142,58 +165,7 @@ export const  ScheduleTable = ({ shiftsBySkill, employeeSkills }) => {
         </tr>
       </tbody>
     </table>
-    <Modal
-        title={`Edit shift of schedule ${modalData?.skill}, ${modalData?.day}, ${modalData?.start_time} -${modalData?.end_time}`}
-        centered
-        open={!!modalData}
-        onOk={() => setModalData(null)}
-        onCancel={() => setModalData(null)}
-      >
-      <List
-       style={{ maxHeight: '300px', overflow: 'auto'}}
-        className="demo-loadmore-list"
-        itemLayout="horizontal"
-        dataSource={currentModalData?.assigned_employees}
-        renderItem={(item) => {
-          const isUnfilled = item === 'Unfilled';
-          const avatar = isUnfilled ? <Avatar icon={<UserOutlined />} /> : <Avatar src={"https://api.dicebear.com/7.x/miniavs/svg?seed=3"} />;
-          const actions = isUnfilled ? [<a key="assign-employee">Assign</a>] : [<a key="list-loadmore-more">Replace</a>, <a key="list-loadmore-more">Delete</a>];
-          
-          return (
-          <List.Item
-            actions={actions}
-          >
-              <List.Item.Meta
-                avatar={avatar}
-                title={
-                <AutoComplete
-                  value={{ value: item, label: item}}
-                  popupClassName="employee-search"
-                  popupMatchSelectWidth={500}
-                  style={{ width: 250 }}
-                  options={employeeSkills.map((emp)=> ({ 
-                    label:     <Flex align="center" justify="space-between">
-                    {emp.name}
-                    {emp.currentShift && 
-                    <span style={{ color: 'darkgray'}}>
-                      {emp.currentShift.skill}, {emp.currentShift.start_time} - {emp.currentShift.end_time}
-                      </span>}
-                    {console.log("empt", emp)}
-                  </Flex>, 
-                    value: emp.name 
-                  }))}
-                  size="large"
-                >
-                  <Input size="middle" placeholder="Search employee..." />
-                </AutoComplete>
-              }
-              />
-          </List.Item>
-        )}}
-      />
-
-      </Modal>
-
+    <EditScheduleShiftModal modalData={modalData} setModalData={setModalData} shiftsBySkill={shiftsBySkill} employeeSkills={employeeSkills} scheduleId={scheduleId} />
     </>
   );
 };

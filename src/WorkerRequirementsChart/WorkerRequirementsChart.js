@@ -50,7 +50,7 @@ function getGraphData(dataFromCsv, selectedDay, selectedSkills) {
   const datasetsPerSkill = {};
 
   dataFromCsv.forEach((row) => {
-    const { start, end, skill, number_of_employ, day } = row;
+    const { start_time: start, end_time: end, skill, number_of_employee: number_of_employ, day } = row;
 
     if (selectedSkills.length === 0 || selectedSkills.includes(skill)) {
       if (day === selectedDay) {
@@ -179,17 +179,12 @@ function WorkerRequirementsChart() {
       <h1>Worker Requirements Chart</h1>
       <div>
         <p htmlFor="day"><b>Select Day: </b></p>
-        {/* <select value={selectedDay} onChange={handleDayChange} >
-          {DAYS_OF_WEEK.map((day, index) => (
-            <option key={index} value={day}>{day}</option>
-          ))}
-        </select> */}
         <Select
-      value={selectedDay}
-      style={{ width: 120 }}
-      onChange={setSelectedDay}
-      options={DAYS_OF_WEEK.map((v)=> ({ value: v, label: v}))}
-    />
+          value={selectedDay}
+          style={{ width: 120 }}
+          onChange={setSelectedDay}
+          options={DAYS_OF_WEEK.map((v)=> ({ value: v, label: v}))}
+        />
 
       </div>
       <div style={{ padding: '10px 0px'}}>

@@ -1,5 +1,6 @@
+#logicShifts.py
 from flask import jsonify, request
-from models import Shifts
+from models.shifts_model import Shifts
 
 def get_shifts(identifier):
     try:
@@ -16,6 +17,7 @@ def get_shifts(identifier):
 def update_shifts(identifier):
     try:
         data = request.json
+        ##THE GET METHOD IS NOT
         new_shifts = data.get('data')
 
         shift = Shifts()

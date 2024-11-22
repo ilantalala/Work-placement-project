@@ -34,6 +34,7 @@ export const ViewSchedule = ({ currentUser }) => {
     const [searchParams, setSearchParams] = useSearchParams()
     const [currentScheduleDay, setCurrentScheduleDay] = useState(new DateObject().format());
     const [selectedEmployee, setSelectedEmployee] = useState("");
+    const [selectedSkills, setSelectedSkills] = useState([]);
 
     const hasScheduleInThisDate = (currDate) => {
         return schedules.some(({ start_date, end_date }) => {
@@ -81,18 +82,26 @@ export const ViewSchedule = ({ currentUser }) => {
         return Array.from(employees);
     }, [shiftsBySkill]);
     
-    
+    const filterBySkills = (data, skills) => {
+        if (!data) return {};
+        return _.pick(data, skills)
+    }
     const filteredData = useMemo(() => {
+        let data = shiftsBySkill;
         if (selectedEmployee) {
-            return filterByEmployee(shiftsBySkill, selectedEmployee);
+            data = filterByEmployee(data, selectedEmployee);
         }
-        return shiftsBySkill
-    }, [selectedEmployee, shiftsBySkill]);
+        if (selectedSkills?.length > 0) {
+            data = filterBySkills(data, selectedSkills);
+        }
+        return data
+    }, [selectedEmployee, shiftsBySkill, selectedSkills]);
     
-    const employeeSkills = currentSchedule?.employee_skill.map((employee)=> ({...employee, currentShift: scheduleByDay.find((shift) => shift.assigned_employees.includes(` ${employee.name}`))}));
+    const employeeSkills = currentSchedule?.employee_skill.map((employee)=> ({...employee, currentShift: scheduleByDay.find((shift) => shift.assigned_employees.includes(employee.name))}));
     
     
     console.log("employeeSkills", scheduleByDay, employeeSkills)
+    console.log("currentSchedule", currentSchedule)
     
     return (
         <div style={{ display: 'flex', flexDirection: "column" }}>
@@ -113,7 +122,9 @@ export const ViewSchedule = ({ currentUser }) => {
                     }}
                 />
 
-                {currentScheduleDay && Object.values(filteredData)?.length > 0 && <div style={{ padding: '24px 0px'}}>
+                {currentScheduleDay && Object.values(filteredData)?.length > 0 && 
+                <>
+                <div style={{ padding: '24px 0px'}}>
                     Filter by employee:
                     <Autocomplete
                         disablePortal
@@ -123,14 +134,30 @@ export const ViewSchedule = ({ currentUser }) => {
                         }}
                         options={uniqueEmployeeNames}
                         sx={{ width: 300 }}
-                        renderInput={(params) => <TextField {...params} label="employee name" />}
+                        renderInput={(params) => <TextField {...params} label="Employee name..." />}
                     />
 
-                </div>}
+                </div>
+                <div style={{ padding: '24px 0px'}}>
+                    Filter by skill:
+                    <Autocomplete
+                        multiple
+                        disablePortal
+                        value={selectedSkills}
+                        onChange={(_, newValue) => {
+                            setSelectedSkills(newValue);
+                        }}
+                        options={Object.keys(shiftsBySkill)}
+                        sx={{ width: 300 }}
+                        renderInput={(params) => <TextField {...params} label="Choose skill..." />}
+                    />
+
+                </div>
+                </>}
             </div>
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', overflow: 'auto'}}>
                 {currentScheduleDay && Object.values(filteredData)?.length > 0 ?
-                    <ScheduleTable shiftsBySkill={filteredData} employeeSkills={employeeSkills} /> :
+                    <ScheduleTable shiftsBySkill={filteredData} employeeSkills={employeeSkills} scheduleId={currentSchedule?._id} /> :
                     <div style={{ padding: '24px', textAlign: 'center', flex: 1}}><b>No shifts for this day.</b> <br /> Please try to choose a another date.</div>}
 
             </div>

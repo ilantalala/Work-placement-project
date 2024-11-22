@@ -1,6 +1,10 @@
 from flask import Flask
 from flask_cors import CORS
-from models import mongo, User, Files, Shifts, Schedule
+from models import mongo
+from models.user_model import User
+from models.files_model import Files
+from models.shifts_model import Shifts
+from models.schedule_model import Schedule
 
 from routes.routesUser import routes_user
 from routes.routesFiles import routes_files
