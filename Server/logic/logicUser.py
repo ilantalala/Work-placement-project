@@ -1,7 +1,8 @@
+#logicUser.py
 from flask import jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
-from models import User
+from models.user_model import User
 
 SECRET_KEY = 'hiiihiiiii'
 

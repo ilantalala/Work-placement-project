@@ -1,101 +1,34 @@
-ID, Name, Skill1, Skill2, Skill3
-1, John, WifiTech, Handman, Guard
-2, Sarah, Engineer, Technician, Secretary
-3, Michael, Technician, Guard, Handman
-4, Emily, Secretary, Engineer, WifiTech
-5, David, Handman, Guard, Technician
-6, Amy, Technician, Secretary, WifiTech
-7, Chris, Guard, Handman, Engineer
-8, Jessica, Engineer, WifiTech, Technician
-9, Alex, Technician, Secretary, WifiTech
-10, Matt, Handman, Guard, WifiTech
-11, Laura, Guard, Technician, Secretary
-12, Adam, Handman, Secretary, Guard
-13, Natalie, Secretary, Handman, WifiTech
-14, Josh, WifiTech, Guard, Engineer
-15, Lauren, Engineer, Technician, Secretary
-16, Ryan, Guard, WifiTech, Handman
-17, Kate, Technician, Engineer, Guard
-18, Tom, Handman, Secretary, Technician
-19, Olivia, Secretary, WifiTech, Guard
-20, Brandon, Guard, Handman, Technician
-21, Emma, Engineer, WifiTech, Secretary
-22, Daniel, WifiTech, Handman, Guard
-23, Hannah, Guard, Engineer, Technician
-24, Liam, Technician, Handman, Guard
-25, Grace, Secretary, Technician, Engineer
-26, Ethan, Handman, WifiTech, Secretary
-27, Sophia, Guard, Technician, Handman
-28, James, Guard, Engineer, Secretary
-29, William, Engineer, Handman, WifiTech
-30, Benjamin, WifiTech, Technician, Guard
-31, Logan, Secretary, Guard, Handman
-32, Mason, Handman, Engineer, WifiTech
-33, Elijah, WifiTech, Technician, Secretary
-34, Ava, Secretary, Engineer, Guard
-35, Lucas, Guard, Handman, Technician
-36, Mia, Technician, Secretary, WifiTech
-37, Jackson, Handman, Guard, WifiTech
-38, Harper, Guard, Technician, Engineer
-39, Jack, Engineer, WifiTech, Secretary
-40, Evelyn, WifiTech, Handman, Guard
-41, Samuel, Technician, Engineer, Secretary
-42, Lily, Handman, Secretary, Technician
-43, Dylan, Guard, WifiTech, Handman
-44, Zoe, Engineer, Technician, Guard
-45, Connor, WifiTech, Secretary, Handman
-46, Stella, Secretary, Guard, Technician
-47, Wyatt, Handman, WifiTech, Engineer
-48, Leah, Guard, Engineer, WifiTech
-49, Owen, Technician, Handman, Secretary
-50, Savannah, Engineer, Handman, Guard
-51, Ilan, Guard, Engineer, Technician
-52, Ilan2, Guard, Engineer, WifiTech
-53, Ilan3, Guard, Handman, WifiTech
-54, Ilan4, Guard, WifiTech, Handman
-55, Max, WifiTech, Handman, Guard
-56, Mia2, Secretary, Engineer, Technician
-57, Liam2, Engineer, Technician, WifiTech
-58, Emma2, Guard, Engineer, Technician
-59, Olivia2, Technician, Handman, WifiTech
-60, Ava2, Handman, Guard, Technician
-61, Sophia2, WifiTech, Engineer, Handman
-62, Noah, Guard, Handman, WifiTech
-63, Isabella, Engineer, Handman, Guard
-64, Ethan2, Secretary, WifiTech, Technician
-65, Mia3, Technician, WifiTech, Handman
-66, James2, Handman, WifiTech, Technician
-67, Elijah2, WifiTech, Secretary, Guard
-68, Mia4, Guard, Technician, Engineer
-69, Michael2, Engineer, Secretary, Handman
-70, Liam3, Technician, Guard, Secretary
-71, Ava3, Handman, Engineer, WifiTech
-72, Sophia3, Secretary, WifiTech, Technician
-73, William2, WifiTech, Handman, Secretary
-74, Benjamin2, Guard, Engineer, Technician
-75, Grace2, Engineer, Secretary, Handman
-76, Harper2, Technician, WifiTech, Guard
-77, Emma3, Handman, Guard, Engineer
-78, Charlotte, WifiTech, Secretary, Handman
-79, Ethan3, Guard, Technician, WifiTech
-80, Mia5, Engineer, Handman, Secretary
-81, Jackson2, WifiTech, Guard, Technician
-82, Ava4, Secretary, Technician, Engineer
-83, Liam4, Handman, Secretary, WifiTech
-84, Noah2, Engineer, WifiTech, Guard
-85, James3, Technician, Secretary, Handman
-86, Mia6, Guard, WifiTech, Engineer
-87, Ella, Handman, WifiTech, Secretary
-88, Jack2, WifiTech, Guard, Engineer
-89, Olivia3, Secretary, Handman, Technician
-90, Liam5, Guard, Engineer, WifiTech
-91, Emma4, Engineer, Technician, Guard
-92, Mia7, WifiTech, Technician, Secretary
-93, William3, Handman, Guard, WifiTech
-94, Harper3, Guard, Secretary, Technician
-95, Grace3, Secretary, Engineer, WifiTech
-96, Mia8, WifiTech, Engineer, Handman
-97, Lucas2, Technician, WifiTech, Secretary
-98, Mia9, Handman, Technician, Secretary
-99, Mia10, Engineer, Guard, WifiTech
-100, Emma5, WifiTech, Handman, Technician
+ID,Name,Skill1,Skill2,Skill3
+1,John,WifiTech,Handman,Guard
+2,Sarah,Engineer,Technician,Secretary
+3,Michael,Technician,Guard,Handman
+4,Emily,Secretary,Engineer,WifiTech
+5,David,Handman,Guard,Technician
+6,Amy,Technician,Secretary,WifiTech
+7,Chris,Guard,Handman,Engineer
+8,Jessica,Engineer,WifiTech,Technician
+9,Alex,Technician,Secretary,WifiTech
+10,Matt,Handman,Guard,WifiTech
+11,Laura,Guard,Technician,Secretary
+12,Adam,Handman,Secretary,Guard
+13,Natalie,Secretary,Handman,WifiTech
+14,Josh,WifiTech,Guard,Engineer
+15,Lauren,Engineer,Technician,Secretary
+16,Ryan,Guard,WifiTech,Handman
+17,Kate,Technician,Engineer,Guard
+18,Tom,Handman,Secretary,Technician
+19,Olivia,Secretary,WifiTech,Guard
+20,Brandon,Guard,Handman,Technician
+21,Emma,Engineer,WifiTech,Secretary
+22,Daniel,WifiTech,Handman,Guard
+23,Hannah,Guard,Engineer,Technician
+24,Liam,Technician,Handman,Guard
+25,Grace,Secretary,Technician,Engineer
+26,Ethan,Handman,WifiTech,Secretary
+27,Sophia,Guard,Technician,Handman
+28,James,Guard,,
+29,William,Engineer,Handman,
+30,Benjamin,WifiTech,Technician,
+31,Logan,Secretary,Guard,
+32,Mason,Handman,,
+33,Elijah,WifiTech,Technician,
