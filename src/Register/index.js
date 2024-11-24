@@ -2,7 +2,6 @@ import React , { useState, useEffect } from 'react';
 import { Layout, Card, Typography, Input, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { UserOutlined, KeyOutlined, TeamOutlined, SmileOutlined } from '@ant-design/icons';
-import { useAppContext } from '../context/AppContext';
 import {useRegister} from '../api/useRegister';
 
 import './style.css';
@@ -11,8 +10,12 @@ const { Title, Text, Link } = Typography;
 const { Content } = Layout;
 
 export const Register = () => {
-    const { currentUser } = useAppContext();
     const navigate = useNavigate();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [displayName, setDisplayName] = useState('');
+    const [companyName, setCompanyName] = useState('');
 
     const { mutate, isError, isPending } = useRegister({
         onError: (error) => {
@@ -21,20 +24,9 @@ export const Register = () => {
         }
     });
 
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [displayName, setDisplayName] = useState('');
-    const [companyName, setCompanyName] = useState('');
     
     const [errorMessage, setErrorMessage] = useState('');
-    
-    useEffect(()=> {
-        if (currentUser) {
-          navigate('/inputCSV');
-        }
-      }, [currentUser])
-    
+
         
 const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,7 +47,7 @@ const handleSubmit = async (e) => {
       return setErrorMessage('Password should contain both letters and digits.');
     }
      
-    await mutate({ 
+    mutate({ 
         username,
         password,
         displayName,

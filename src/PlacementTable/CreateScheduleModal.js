@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Button } from 'antd';
+import { Button, Switch } from 'antd';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -23,9 +23,10 @@ function getNextSunday() {
   }
   
 export const CreateScheduleModal = ({ children, currentUser }) => {
+  const [checked, setChecked] = React.useState(false);
   const navigate = useNavigate();
   const {  mutate, isPending, isError } = useMutation({
-    mutationFn: ({ startTime, endTime }) => axiosInstance.post(`/${currentUser}/schedule`, { date: [startTime, endTime] }),
+    mutationFn: ({ startTime, endTime }) => axiosInstance.post(`/${currentUser}/schedule`, { date: [startTime, endTime], prioritize: checked }),
     onSuccess: (_, { startTime, endTime }) => {
       navigate(`/schedule?date=${new Date(startTime).toLocaleDateString()}`);
     },
@@ -86,10 +87,13 @@ export const CreateScheduleModal = ({ children, currentUser }) => {
             onChange={(date)=> setDate([date?.[0]?.toDate(), date?.[1]?.toDate()])}
            className="rmdp-mobile" range weekPicker  minDate={new DateObject(getNextSunday())} format="DD/MM/YYYY"/>
 
+          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: "24px"}}>
+            <span> Should prioritize day shifts?</span> <Switch checked={checked} onChange={(c)=> setChecked(c)} />
+          </div>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} size="large" >Close</Button>
-          <Button loading={isPending} type="submit" color="primary" size="large" variant="solid" onClick={onCreateSchedule}>Create</Button>
+          <Button disabled={!date?.length} loading={isPending} type="submit" color="primary" size="large" variant="solid" onClick={onCreateSchedule}>Create</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
