@@ -1,13 +1,15 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import _ from 'lodash';
-import { Spin } from 'antd';
+import { Spin, Button } from 'antd';
 import { format } from 'date-fns';
+import { FileZipOutlined } from '@ant-design/icons';
 import { ScheduleTable } from './ScheduleTable';
 import { useSearchParams } from 'react-router-dom'
 import Autocomplete from '@mui/material/Autocomplete';
 import { DateObject, Calendar } from "react-multi-date-picker"
 import { useGetSchedule} from '../api/useGetSchedule';
 import TextField from '@mui/material/TextField';
+import { exportCSV } from './csv';
 import './style.css';
 
 
@@ -99,16 +101,25 @@ export const ViewSchedule = ({ currentUser }) => {
     
     const employeeSkills = currentSchedule?.employee_skill.map((employee)=> ({...employee, currentShift: scheduleByDay.find((shift) => shift.assigned_employees.includes(employee.name))}));
     
+    const exportToCsv = () => {
+        exportCSV({ filename: 'schedule.csv', data: currentSchedule?.schedule });
+    }
     
     console.log("employeeSkills", scheduleByDay, employeeSkills)
     console.log("currentSchedule", currentSchedule)
     
     return (
         <div style={{ display: 'flex', flexDirection: "column" }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            
             <h2>View Schedule</h2>
-            { isLoading ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: "60vh"}}> 
+            {currentSchedule?.schedule && <Button onClick={exportToCsv} type="primary" variant="filled" icon={<FileZipOutlined />}> Export to CSV </Button>}
+            </div>
+            { isLoading ?
+             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: "60vh"}}> 
             <Spin size="large" />
-        </div> : <div style={{ display: 'flex'}}>
+        </div> 
+        : <div style={{ display: 'flex'}}>
         
             <div style={{ padding: '24px'}}>
                 <Calendar
