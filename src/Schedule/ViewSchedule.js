@@ -37,7 +37,7 @@ export const ViewSchedule = ({ currentUser }) => {
     const [selectedSkills, setSelectedSkills] = useState([]);
 
     const hasScheduleInThisDate = (currDate) => {
-        return schedules.some(({ start_date, end_date }) => {
+        return schedules?.some(({ start_date, end_date }) => {
             const isAfterStartDate = new DateObject(new Date(start_date)).format() <= (currDate);
             const isBeforeEndDate = new DateObject(new Date(end_date)).format() >= (currDate);
             return isAfterStartDate && isBeforeEndDate

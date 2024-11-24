@@ -1,7 +1,7 @@
 import datetime
 import pandas as pd
 from bson import ObjectId
-from flask import Flask, jsonify
+from flask import Flask
 import ast
 from .base_model import BaseModel
 from .shifts_model import Shifts

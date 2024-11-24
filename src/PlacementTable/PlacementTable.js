@@ -23,7 +23,8 @@ const PlacementTable = () => {
 
     const onSubmitChanges = async () => {
         try {
-            const result = await axiosInstance.put(`/${currentUser}/shifts`, { data: rows });
+            const data = rows.map(({ isNew, ...row })=> row);
+            const result = await axiosInstance.put(`/${currentUser}/shifts`, { data });
             console.log("result", result)
             alert("Changes saved successfully.")
         } catch (e) {
