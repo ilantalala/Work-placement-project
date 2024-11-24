@@ -2,7 +2,6 @@ import React , { useState, useEffect } from 'react';
 import { Layout, Card, Typography, Input, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { UserOutlined, KeyOutlined } from '@ant-design/icons';
-import { useAppContext } from '../context/AppContext';
 import {useLogin} from '../api/useLogin';
 
 import './style.css';
@@ -11,8 +10,10 @@ const { Title, Text, Link } = Typography;
 const { Content } = Layout;
 
 export const Login = () => {
-    const { currentUser } = useAppContext();
     const navigate = useNavigate();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const { mutate, isError, isPending } = useLogin({
         onError: (error) => {
@@ -21,24 +22,14 @@ export const Login = () => {
         }
       });
 
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
     
-    useEffect(()=> {
-        if (currentUser) {
-          navigate('/inputCSV');
-        }
-      }, [currentUser])
     
-      const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-      
-        console.log({ username, password})
         if (!username || !password) {
           return setErrorMessage('Please fill all fields.');
         } 
-        await mutate({ username, password });
+        mutate({ username, password });
     };
 
     return (

@@ -1,28 +1,23 @@
 import React, { useState, useMemo } from 'react';
 import {
-  DesktopOutlined,
-  FileOutlined,
   PieChartOutlined,
   TeamOutlined,
   UserOutlined,
   SmileFilled
 } from '@ant-design/icons';
 import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { Layout, Menu, theme } from 'antd';
 import { CalendarTwoTone} from '@ant-design/icons';
 import { Login } from './Login';
 import { Profile } from './Profile';
 import { Register } from './Register';
-import RegisterCard from './registerCard/RegisterCard';
-import InputCSV from './InputCsv/InputCSV';
 import PlacementTable from './PlacementTable/PlacementTable';
 import WorkerRequirementsChart from './WorkerRequirementsChart/WorkerRequirementsChart';
-import Logout from './Logout/Logout';
 import { FileManager } from './InputCsv/FileManager';
 import { ViewSchedule } from './Schedule/ViewSchedule';
 import { useAppContext } from './context/AppContext';
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
     key,
@@ -63,7 +58,6 @@ export const AppLayout = () => {
     return [getItem(`Welcome, ${currentUser}!`, '/profile', <SmileFilled />), ...items]
   }, [currentUser])
 
-  // const currentRoute = items.find((i)=> i.key === pathname);
   if (!currentUser) {
     return (
     <Routes>
@@ -90,9 +84,7 @@ export const AppLayout = () => {
         <Routes>
             <Route path="/" element={<FileManager />} />
             <Route path="/profile" element={<Profile />} />
-
             <Route path="/schedule" element={<ViewSchedule />} />
-            <Route path="/oldInputCsv" element={<InputCSV />} />
             <Route path="/placement-table" element={<PlacementTable />} />
             <Route path="/worker-requirements-chart" element={<WorkerRequirementsChart />} />
         </Routes>

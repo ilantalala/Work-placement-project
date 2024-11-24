@@ -13,16 +13,17 @@ const doLogin = async ({ username, password }) => {
 export const useLogin = ({ onError }) => {
   const { setCurrentUser } = useAppContext();
   const navigate = useNavigate();
-  return useMutation({
+  const { mutate, isError, isPending } = useMutation({
     mutationFn: doLogin,
     onSuccess: (data, { username }) => {
       setCurrentUser(username);
-      // TODO: Check about the token from BE
       localStorage.setItem('token', data);
       localStorage.setItem('username', username);
       navigate('/');
-      },
+    },
     onError,
   });
 
+  return  { mutate, isError, isPending }
 };
+
