@@ -4,7 +4,7 @@ import { Avatar, Descriptions } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 
 export const Profile = () => {
-    const { data, isLoading} = useGetCurrentUserData()
+    const { data } = useGetCurrentUserData()
 
     const items = [
         {
@@ -23,7 +23,6 @@ export const Profile = () => {
           children: data?.company_name,
         },
       ];
-    console.log("aaa", data)
     return (
         <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '24px'}}>

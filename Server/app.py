@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from models.base_model import mongo
+from models import mongo
 from models.user_model import User
 from models.files_model import Files
 from models.shifts_model import Shifts

@@ -22,18 +22,25 @@ def assign_employees_to_shifts(employee_skills_data, optimized_shifts):
         print(employee_skills_df.head())
 
         # Clean column names
-        employee_skills_df.columns = employee_skills_df.columns.str.strip()
+        employee_skills_df = employee_skills_df.applymap(
+            lambda x: x.strip() if isinstance(x, str) else x
+        )
         
         # Create a dictionary of employees and their skills
         employees = defaultdict(list)
         for _, row in employee_skills_df.iterrows():
-            employee_name = str(row['Name']).strip() if 'Name' in row else None
+            employee_name = row.get('name', None)
             if not employee_name:
                 continue
-                
-            for skill_col in ['Skill1', 'Skill2', 'Skill3']:
-                if skill_col in row and pd.notna(row[skill_col]) and str(row[skill_col]).strip():
-                    skill_value = str(row[skill_col]).strip()
+
+            # Clean the employee name
+            employee_name = str(employee_name).strip()
+
+            for skill_col in ['skill1', 'skill2', 'skill3']:
+                skill_value = row.get(skill_col, None)
+                if skill_value and pd.notna(skill_value):
+                    # Clean the skill value
+                    skill_value = str(skill_value).strip()
                     employees[employee_name].append(skill_value)
 
         print("DEBUG: Created employees dictionary with", len(employees), "employees")

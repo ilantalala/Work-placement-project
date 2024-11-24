@@ -1,14 +1,13 @@
 import { Box,Tab, Tabs } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Table from './Table';
-import { useNavigate } from 'react-router-dom';
 import { AddCSVFileButton } from './AddCSVFile';
 import { AddFilesModal } from './AddFilesModal';
 import CustomTabPanel from './CustomTabPanel';
 import { UploadFilesToServer } from './UploadFilesToServer';
 import { useGetCsvData } from '../api/useGetCsvData';
 
-export const FileManager = ({ currentUser ,setPlacementData}) => {
+export const FileManager = () => {
     const [value, setValue] = useState(0);
     const { csvData, setCsvData} = useGetCsvData(); // { employeeSkill, workerRequirements, shiftBasket } 
 

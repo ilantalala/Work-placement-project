@@ -11,7 +11,7 @@ const fetchSchedule = async (currentUser) => {
 export const useGetSchedule = () => {
   const { currentUser } = useAppContext();
   return useQuery({
-    queryKey: ['schedule', currentUser],
+    queryKey: ['schedule'],
     queryFn: () => fetchSchedule(currentUser),
     refetchOnWindowFocus: false, // Do not refetch when window is focused
     enabled: !!currentUser // Only fetch data when enabled is true -> turn currentUser to boolean

@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'antd';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -28,8 +26,8 @@ export const CreateScheduleModal = ({ children, currentUser }) => {
   const navigate = useNavigate();
   const {  mutate, isPending, isError } = useMutation({
     mutationFn: ({ startTime, endTime }) => axiosInstance.post(`/${currentUser}/schedule`, { date: [startTime, endTime] }),
-    onSuccess: () => {
-      navigate('/schedule');
+    onSuccess: (_, { startTime, endTime }) => {
+      navigate(`/schedule?date=${new Date(startTime).toLocaleDateString()}`);
     },
     onError: () => {
       alert("Failed to create schedule. try again.");

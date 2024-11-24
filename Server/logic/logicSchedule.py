@@ -13,10 +13,10 @@ def polish_employee_skills(employee_skills_data):
     polished_data = []
     for employee in employee_skills_data:
         polished_employee = {
-            'Name': employee.get('Name', '').strip(),
-            'Skill1': employee.get('Skill1', '').strip(),
-            'Skill2': employee.get('Skill2', '').strip(),
-            'Skill3': employee.get('Skill3', '').strip()
+            'name': employee.get('name', '').strip(),
+            'skill1': employee.get('skill1', '').strip(),
+            'skill2': employee.get('skill2', '').strip(),
+            'skill3': employee.get('skill3', '').strip()
         }
         polished_data.append(polished_employee)
     return polished_data
@@ -43,17 +43,17 @@ def process_employee_data(raw_data):
     for employee in raw_data:
         # Create standardized employee record
         cleaned_employee = {
-            'Name': employee.get('name', employee.get('Name', '')).strip(),
-            'Skill1': employee.get('skill1', employee.get('Skill1', '')).strip(),
-            'Skill2': employee.get('skill2', employee.get('Skill2', '')).strip(),
-            'Skill3': employee.get('skill3', employee.get('Skill3', '')).strip()
+            'name': employee.get('name', employee.get('name', '')).strip(),
+            'skill1': employee.get('skill1', employee.get('skill1', '')).strip(),
+            'skill2': employee.get('skill2', employee.get('skill2', '')).strip(),
+            'skill3': employee.get('skill3', employee.get('skill3', '')).strip()
         }
 
         # Only add if has name and at least one skill
-        if cleaned_employee['Name'] and any([
-            cleaned_employee['Skill1'],
-            cleaned_employee['Skill2'],
-            cleaned_employee['Skill3']
+        if cleaned_employee['name'] and any([
+            cleaned_employee['skill1'],
+            cleaned_employee['skill2'],
+            cleaned_employee['skill3']
         ]):
             cleaned_data.append(cleaned_employee)
 
@@ -65,10 +65,10 @@ def process_employee_data(raw_data):
         for emp in raw_data[:2]:
             print("Original:", emp)
             print("Mapped:", {
-                'Name': emp.get('name', emp.get('Name', '')).strip(),
-                'Skill1': emp.get('skill1', emp.get('Skill1', '')).strip(),
-                'Skill2': emp.get('skill2', emp.get('Skill2', '')).strip(),
-                'Skill3': emp.get('skill3', emp.get('Skill3', '')).strip()
+                'name': emp.get('name', emp.get('name', '')).strip(),
+                'skill1': emp.get('skill1', emp.get('skill1', '')).strip(),
+                'skill2': emp.get('skill2', emp.get('skill2', '')).strip(),
+                'skill3': emp.get('skill3', emp.get('skill3', '')).strip()
             })
     
     return cleaned_data
@@ -161,4 +161,70 @@ def create_schedule(identifier):
         print("Error while creating schedule:", str(e))
         import traceback
         traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+def update_shifts(identifier, scheduleId, shiftId):
+    # ["emily", "john", "jane", "Unfilled", "Unfilled"]
+    # will accept scheduleId, shiftId, and employees list. 
+    # we need to update the employees list for the given shiftId in the given scheduleId
+    # and we need to search if the employees are in another shift in the same schedule, if so, remove them from that shift
+    try:
+        data = request.json
+        employees = data.get('employees')
+
+        if not employees:
+            return jsonify({"error": "Missing employees"}), 400
+        
+        schedule = Schedule()
+        schedule_to_update = schedule.get_schedule_by_id(scheduleId)
+        if not schedule_to_update:
+            return jsonify({"error": "Schedule not found"}), 404
+
+
+
+        shifts = schedule_to_update['schedule']
+        shift_index = next((i for i, shift in enumerate(shifts) if shift["id"] == shiftId), -1)
+
+        if shift_index == -1:
+            raise Exception("Shift not found in schedule")
+
+        shift_day = shifts[shift_index]['day']
+        shifts[shift_index]['assigned_employees'] = employees
+
+        for shift in shifts:
+            if shift['day'] == shift_day and shift['id'] != shiftId:
+                shift['assigned_employees'] = [
+                    "Unfilled" if emp in employees and emp != "Unfilled" else emp
+                    for emp in shift.get('assigned_employees', [])
+                ]
+
+        updated_schedule = schedule.update_schedule(scheduleId, shifts)
+        if updated_schedule:
+            return jsonify(updated_schedule), 200
+        else:
+            return jsonify({"error": "Error while updating shifts"}), 500
+    except Exception as e:
+        print("Error while updating shifts:", e)
+        return jsonify({"error": str(e)}), 500 
+def delete_shift(scheduleId, shiftId):
+    try:
+        schedule = Schedule()
+        schedule_to_update = schedule.get_schedule_by_id(scheduleId)
+        if not schedule_to_update:
+            return jsonify({"error": "Schedule not found"}), 404
+
+        shifts = schedule_to_update['schedule']
+        shift_index = next((i for i, shift in enumerate(shifts) if shift["id"] == shiftId), -1)
+
+        if shift_index == -1:
+            raise Exception("Shift not found in schedule")
+
+        shifts.pop(shift_index)
+
+        updated_schedule = schedule.update_schedule(scheduleId, shifts)
+        if updated_schedule:
+            return jsonify(updated_schedule), 200
+        else:
+            return jsonify({"error": "Error while deleting shift"}), 500
+    except Exception as e:
+        print("Error while deleting shift:", e)
         return jsonify({"error": str(e)}), 500

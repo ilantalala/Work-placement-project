@@ -7,7 +7,7 @@ import {
   UserOutlined,
   SmileFilled
 } from '@ant-design/icons';
-import { useNavigate, Routes, Route } from 'react-router-dom';
+import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { CalendarTwoTone} from '@ant-design/icons';
 import { Login } from './Login';
@@ -46,6 +46,7 @@ const items = [
 export const AppLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { currentUser, logout } = useAppContext();
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -62,6 +63,7 @@ export const AppLayout = () => {
     return [getItem(`Welcome, ${currentUser}!`, '/profile', <SmileFilled />), ...items]
   }, [currentUser])
 
+  // const currentRoute = items.find((i)=> i.key === pathname);
   if (!currentUser) {
     return (
     <Routes>
@@ -81,7 +83,7 @@ export const AppLayout = () => {
           <CalendarTwoTone  color="red" twoToneColor="#5a54f9" style={{ fontSize: "32px" , }} />
           ShiftAssign
         </div>
-        <Menu theme="dark" defaultSelectedKeys={['/']} mode="inline" onClick={onMenuClick} items={menuItems} />
+        <Menu theme="dark" selectedKeys={[pathname]} defaultSelectedKeys={['/']} mode="inline" onClick={onMenuClick} items={menuItems} />
 
       </Sider>
       <Layout style={{ padding: '16px'}}>

@@ -25,7 +25,7 @@ hashmap = {}
 # Iterate over each row in table1_df
 for index, row in table1_df.iterrows():
     # Iterate over each skill column (Skill1, Skill2, Skill3)
-    for skill_column in ['Skill1', 'Skill2', 'Skill3']:
+    for skill_column in ['skill1', 'skill2', 'skill3']:
         # Get the skill value from the current skill column
         skill = row[skill_column].strip()  # Remove leading and trailing spaces
         # Check if the skill exists in the hashmap
@@ -33,7 +33,7 @@ for index, row in table1_df.iterrows():
             # If the skill does not exist, initialize it as an empty list
             hashmap[skill] = []
         # Strip leading and trailing spaces from the name
-        name = row['Name'].strip()
+        name = row['name'].strip()
         # Append the tuple (ID, Name) to the list corresponding to the skill
         hashmap[skill].append((row['ID'], name))
     
@@ -109,7 +109,7 @@ for i in range(len(table3_df)):
     required_skill = table3_df.iloc[i]['skill']
     for j in range(len(table1_df)):
         workers_with_skill = hashmap.get(required_skill, [])  # Get list of workers with required skill
-        worker_id_name = (table1_df.iloc[j]['ID'], table1_df.iloc[j]['Name'].strip())
+        worker_id_name = (table1_df.iloc[j]['ID'], table1_df.iloc[j]['name'].strip())
         if worker_id_name in workers_with_skill:
             prob += shift_vars[i][j] <= 1, f"Skill_Constraint_Shift_{i}_Worker_{j}"
         else:

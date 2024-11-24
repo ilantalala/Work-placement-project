@@ -1,18 +1,34 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
+import React from 'react';
 import _ from 'lodash';
 import Popover from '@mui/material/Popover';
-import Button from '@mui/material/Button';
+import { EditOutlined, TeamOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Card, Modal } from 'antd';
+import { useQueryClient } from '@tanstack/react-query';
+import { useDeleteShift } from '../api/useDeleteShift';
+import { EditScheduleShiftModal } from './EditScheduleShiftModal';
+
+
+const getColor = (employeesLength, number_of_employee) => {
+  if (employeesLength === number_of_employee) {
+    return 'green';
+  }
+  if (employeesLength > number_of_employee / 2) {
+    return 'orange';
+  }
+  return 'red';
+}
 
 const tableStyle = {
     width: '80%',
     margin: '50px auto',
     borderCollapse: 'collapse',
-    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)'
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+    maxWidth: '100%',
+    overflow: 'auto'
   };
 
   const thStyle = {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#5a54f9',
     color: 'white',
     padding: '12px 15px',
     textAlign: 'center',
@@ -32,7 +48,20 @@ const tableStyle = {
     transition: 'background-color 0.3s ease'
   };
 
-export const  ScheduleTable = ({ shiftsBySkill }) => {
+export const  ScheduleTable = ({ shiftsBySkill, employeeSkills, scheduleId }) => {
+    const [modalData, setModalData] = React.useState(null); // { day, start_time, end_time, skill }
+    const queryCache = useQueryClient();
+
+    const { mutate } = useDeleteShift({
+      onSuccess: () => {
+        queryCache.invalidateQueries(['schedule']);
+
+        alert("shift deleted successfully")
+      },
+      onError: () => {
+        alert("error deleting shift, please try again");
+      }
+    });
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [id, setId] = React.useState(null);
 
@@ -66,43 +95,77 @@ export const  ScheduleTable = ({ shiftsBySkill }) => {
           {columns.map((skill, index) => (
               <td key={index} style={tdStyle}>
              {shiftsBySkill[skill].map((shift) => {
-                const key = `${shift.day}-${shift.start_time}-${shift.end_time}`;
+               const { day, start_time, end_time, skill } = shift;
+                const key = `${day}-${start_time}-${end_time}-${skill}`;
                 const employees = shift.assigned_employees.filter((employee) => employee !== 'Unfilled');
-                 return <div key={key} style={{ border: '1px solid black', padding: '12px', margin: '12px' }}>
-                    <div> {shift.start_time } - {shift.end_time} </div>
-                    <div> cost of shift: {shift.cost_of_shift} </div>
-                    <div> employees:  {employees?.length} / {shift.number_of_employee} </div>
-                    {employees?.length && <Button onClick={(e)=> handleClick(e,key)}>View employees</Button> }
-                    <Popover 
+                return (
+                  <Card 
+                    key={key}
+                    actions={[
+                      <TeamOutlined key="employees"onClick={(e)=> handleClick(e,key)}  />,
+                      <EditOutlined key="edit" onClick={(e)=> setModalData({ day, start_time, end_time, skill })}/>,
+                      <DeleteOutlined key="setting" onClick={(e)=> {
+                        Modal.warning({
+                          title: 'Are you sure you want to delete this shift?',
+                          content: 'This action cannot be undone.',
+                          okText: "Yes, delete shift",
+                          okType: "danger",
+                          cancelText: "Cancel",
+                          closable: true,
+                          onOk() {
+                            mutate({
+                              scheduleId,
+                              shiftId: shift.id
+                            })
+                          }
+                        });
+                      }} />,
+                    ]} 
+                    style={{ minWidth: 200, margin: "15px 0px"}}
+                  >
+                  <Card.Meta
+                    // avatar={<Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=2" />}
+                    title={`${shift.start_time} - ${shift.end_time}`}
+                    description={
+                      <>
+                        <p>Cost of shift: {shift.cost_of_shift} </p>
+                        <p>Employees: 
+                          <span style={{ marginLeft: '2px', color: getColor(employees?.length, shift.number_of_employee)}}>
+                            {employees?.length} / {shift.number_of_employee} 
+                          </span>
+                        </p>
+                      </>
+                    }
+                  />
+                  <Popover 
                     aria-describedby={key} 
                     id={key}
                     open={Boolean(anchorEl) && id === key}
                     anchorEl={anchorEl}
                     onClose={handleClose}
-            
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'center',
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'center',
-                        }}
-                        >
-                            <div style={{ padding: '12px', overflow: 'auto', maxHeight: '200px'}}>
-
-
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'center',
+                    }}
+                    >
+                      <div style={{ padding: '12px', overflow: 'auto', maxHeight: '200px'}}>
                         {employees?.map((employee) => <div style={{padding: '8px'}}> {employee} </div>)}
-                            </div>
+                      </div>
                     </Popover>
-
-                </div>
+                </Card>
+          
+                )
             })}
             </td>
           ))}
         </tr>
       </tbody>
     </table>
+    <EditScheduleShiftModal modalData={modalData} setModalData={setModalData} shiftsBySkill={shiftsBySkill} employeeSkills={employeeSkills} scheduleId={scheduleId} />
     </>
   );
 };

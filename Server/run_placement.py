@@ -48,12 +48,12 @@ def clean_column_names(df):
     df.columns = df.columns.str.strip()
     # Create a mapping of common column name variations
     column_mapping = {
-        ' Name': 'Name',
-        'name': 'Name',
-        ' Skill1': 'Skill1',
-        ' Skill2': 'Skill2',
-        ' Skill3': 'Skill3',
-        'ID': 'Name'  # If ID is used instead of Name
+        ' name': 'name',
+        'name': 'name',
+        ' skill1': 'skill1',
+        ' skill2': 'skill2',
+        ' skill3': 'skill3',
+        'ID': 'name'  # If ID is used instead of Name
     }
     return df.rename(columns=column_mapping)
 
@@ -85,7 +85,7 @@ def run_placement_algorithms():
         # Validate required columns
         required_worker_cols = ['day', 'skill', 'start_time', 'end_time', 'number_of_employ']
         required_shift_cols = ['day', 'start_time', 'end_time', 'cost_of_shift']
-        required_employee_cols = ['Name', 'Skill1', 'Skill2', 'Skill3']
+        required_employee_cols = ['name', 'skill1', 'skill2', 'skill3']
 
         for df, name, req_cols in [
             (worker_requirements, 'Worker requirements', required_worker_cols),

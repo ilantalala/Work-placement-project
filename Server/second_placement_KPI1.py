@@ -22,11 +22,11 @@ def assign_employees_to_shifts_KPI1(employee_skills_data, optimized_shifts):
         # Create a dictionary of employees and their skills
         employees = defaultdict(list)
         for _, row in employee_skills_df.iterrows():
-            employee_name = str(row['Name']).strip() if 'Name' in row else None
+            employee_name = str(row['name']).strip() if 'name' in row else None
             if not employee_name:
                 continue
                 
-            for skill_col in ['Skill1', 'Skill2', 'Skill3']:
+            for skill_col in ['skill1', 'skill2', 'skill3']:
                 if skill_col in row and pd.notna(row[skill_col]) and str(row[skill_col]).strip():
                     skill_value = str(row[skill_col]).strip()
                     employees[employee_name].append(skill_value)

@@ -1,5 +1,7 @@
 import datetime
 import pandas as pd
+from bson import ObjectId
+from flask import Flask
 import ast
 from .base_model import BaseModel
 from .shifts_model import Shifts
@@ -17,6 +19,36 @@ class Schedule(BaseModel):
             return schedule.find({'identifier': currentUser})
         except Exception as e:
             print(f"Error finding schedule: {e}")
+            return None
+
+    def get_schedule_by_id(self, schedule_id):
+        try:
+            schedule = self.get_schedule_collection()
+            schedule_id = ObjectId(schedule_id)
+            return schedule.find_one({'_id': schedule_id})
+        except Exception as e:
+            print(f"Error finding schedule: {e}")
+            return None
+    def update_schedule(self, schedule_id, schedule_data):
+        try:
+            print(schedule_data)
+            schedule = self.get_schedule_collection()
+            schedule_id = ObjectId(schedule_id)
+            result = schedule.update_one(
+                {'_id': schedule_id},
+                {
+                    '$set': {
+                        'schedule': schedule_data,
+                    }
+                }
+            )
+            if result.acknowledged:
+                sch = schedule.find_one({'_id': schedule_id})
+                sch['_id'] = str(sch['_id'])
+                return sch
+            return None
+        except Exception as e:
+            print(f"Error updating schedule: {e}")
             return None
 
     def add_schedule(self, currentUser, scheduleDate, schedule_data):

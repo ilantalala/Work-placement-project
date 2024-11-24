@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button, notification } from "antd";
 import Papa from "papaparse";
 import { UploadOutlined } from '@ant-design/icons';
@@ -14,7 +13,6 @@ export const UploadFilesToServer = ({ csvData }) => {
 
   const { isError, mutate} = useUploadCsv({
     onSuccess: (data) => {
-      console.log('Received data from server:', data);
       navigate('/placement-table');
     },
     onError: (error) => {
@@ -31,13 +29,6 @@ export const UploadFilesToServer = ({ csvData }) => {
         const employeeSkillContent = Papa.unparse({ fields: requiredHeaders.employeeSkill, data: csvData.employeeSkill });
         const workerRequirementsContent = Papa.unparse({ fields: requiredHeaders.workerRequirements, data: csvData.workerRequirements });
         const shiftBasketContent = Papa.unparse({ fields: requiredHeaders.shiftBasket, data: csvData.shiftBasket });
-
-        console.log('Sending data to server:', {
-          currentUser,
-          employeeSkillContent,
-          workerRequirementsContent,
-          shiftBasketContent,
-        });
 
         mutate({
           currentUser,

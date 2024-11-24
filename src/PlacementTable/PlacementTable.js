@@ -1,8 +1,5 @@
-// PlacementTable.js
-
 import React, {useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link , useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './PlacementTable.css';
 import { Spin, Button, Tooltip } from 'antd';
 import { PlusOutlined, SaveOutlined } from '@ant-design/icons';
@@ -26,7 +23,8 @@ const PlacementTable = () => {
 
     const onSubmitChanges = async () => {
         try {
-            const result = await axiosInstance.put(`/${currentUser}/shifts`, { data: rows });
+            const data = rows.map(({ isNew, ...row })=> row);
+            const result = await axiosInstance.put(`/${currentUser}/shifts`, { data });
             console.log("result", result)
             alert("Changes saved successfully.")
         } catch (e) {
