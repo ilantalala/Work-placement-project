@@ -38,6 +38,8 @@ Server/venv/
 Server/.env
 Server/.pytest_cache/
 Server/.mypy_cache/
+*/__pycache__/*
+__pycache__/
 
 # Common Python directories and files
 *.py[cod]

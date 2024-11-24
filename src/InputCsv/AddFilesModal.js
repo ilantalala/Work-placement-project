@@ -28,7 +28,7 @@ export const AddFilesModal = ({ setCsvData }) => {
           <p>Add your worker Requirements:</p>
           <AddCSVFileButton name="workerRequirements" setData={setTempData} />
 
-          <p>Add your shiftBasket:</p>
+          <p>Add your shift Basket:</p>
           <AddCSVFileButton name="shiftBasket" setData={setTempData} />
 
           <Button variant="contained" color="success" onClick={() => {

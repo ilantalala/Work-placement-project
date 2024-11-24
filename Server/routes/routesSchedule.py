@@ -9,13 +9,16 @@ routes_schedule= Blueprint('routes_schedule', __name__)
 @routes_schedule.route('/api/<identifier>/schedule', methods=['GET'])
 def get_user_schedules(identifier):
      print("GET-SCHEDULE_ROUTE")
-     return get_schedules(identifier)
+     res = get_schedules(identifier)
+     print ("davidos", res, type(res))
+     return res
 
 @routes_schedule.route('/api/<identifier>/schedule', methods=['POST'])
 def create_user_schedule(identifier):
      print("POST-SCHEDULE_ROUTE")
-     print("create_schedule(identifier): ",create_schedule(identifier))
-     return create_schedule(identifier)
+     res = create_schedule(identifier)
+     print("create_schedule(identifier): ",res)
+     return res
 
 @routes_schedule.route('/api/schedule/<id>/edit/<shift_id>', methods=['PUT'])
 def edit_schedule_shifts(id, shift_id):

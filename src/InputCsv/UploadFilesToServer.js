@@ -13,7 +13,6 @@ export const UploadFilesToServer = ({ csvData }) => {
 
   const { isError, mutate} = useUploadCsv({
     onSuccess: (data) => {
-      console.log('Received data from server:', data);
       navigate('/placement-table');
     },
     onError: (error) => {

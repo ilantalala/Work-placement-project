@@ -162,11 +162,7 @@ def create_schedule(identifier):
         import traceback
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
-<<<<<<< HEAD
-def update_shifts(scheduleId, shiftId):
-=======
 def update_shifts(identifier, scheduleId, shiftId):
->>>>>>> 8c07729bfdb287bfd2be97cc207d289bad75f9d2
     # ["emily", "john", "jane", "Unfilled", "Unfilled"]
     # will accept scheduleId, shiftId, and employees list. 
     # we need to update the employees list for the given shiftId in the given scheduleId
@@ -209,7 +205,6 @@ def update_shifts(identifier, scheduleId, shiftId):
     except Exception as e:
         print("Error while updating shifts:", e)
         return jsonify({"error": str(e)}), 500 
-<<<<<<< HEAD
 def delete_shift(scheduleId, shiftId):
     try:
         schedule = Schedule()
@@ -233,5 +228,3 @@ def delete_shift(scheduleId, shiftId):
     except Exception as e:
         print("Error while deleting shift:", e)
         return jsonify({"error": str(e)}), 500
-=======
->>>>>>> 8c07729bfdb287bfd2be97cc207d289bad75f9d2
