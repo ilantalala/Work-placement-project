@@ -13,7 +13,7 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
-import {randomId} from '@mui/x-data-grid-generator';
+import { randomId } from '@mui/x-data-grid-generator';
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
@@ -22,7 +22,7 @@ function EditToolbar(props) {
     const id = randomId();
     setRows((oldRows) => [
       ...oldRows,
-      { id, day: '', skill: '', start_time: '', end_time: '',  number_of_employee:''},
+      { id, day: '', skill: '', start_time: '', end_time: '', number_of_employee: '' },
     ]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
@@ -41,7 +41,7 @@ function EditToolbar(props) {
 
 export const EditableTable = ({ rows, setRows }) => {
   const [rowModesModel, setRowModesModel] = React.useState({});
-  
+
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true;
@@ -50,7 +50,7 @@ export const EditableTable = ({ rows, setRows }) => {
 
   const handleEditClick = (id) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-    
+
   };
 
   const handleSaveClick = (id) => () => {
@@ -101,18 +101,18 @@ export const EditableTable = ({ rows, setRows }) => {
       editable: true,
     },
     {
-        field: 'end_time',
-        headerName: 'End time',
-        type: 'string',
-        width: 180,
-        editable: true,
+      field: 'end_time',
+      headerName: 'End time',
+      type: 'string',
+      width: 180,
+      editable: true,
     },
     {
-        field: 'number_of_employee',
-        headerName: 'Number of employees',
-        type: 'number',
-        width: 180,
-        editable: true,
+      field: 'number_of_employee',
+      headerName: 'Number of employees',
+      type: 'number',
+      width: 180,
+      editable: true,
     },
     {
       field: 'actions',
@@ -178,7 +178,6 @@ export const EditableTable = ({ rows, setRows }) => {
       <DataGrid
         rows={rows}
         columns={columns}
-        igno
         editMode="row"
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}

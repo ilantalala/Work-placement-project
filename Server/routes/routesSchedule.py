@@ -15,10 +15,7 @@ def get_user_schedules(identifier):
 
 @routes_schedule.route('/api/<identifier>/schedule', methods=['POST'])
 def create_user_schedule(identifier):
-     print("POST-SCHEDULE_ROUTE")
-     res = create_schedule(identifier)
-     print("create_schedule(identifier): ",res)
-     return res
+     return create_schedule(identifier)
 
 @routes_schedule.route('/api/schedule/<id>/edit/<shift_id>', methods=['PUT'])
 def edit_schedule_shifts(id, shift_id):

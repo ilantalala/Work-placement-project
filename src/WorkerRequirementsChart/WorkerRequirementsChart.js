@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
 import { DAYS_OF_WEEK } from '../consts';
 import Chart from 'chart.js/auto';
-import { transformWorkerRequirementsData } from '../utils/transformWorkerRequirements';
 import { useGetShifts } from '../api/useGetShifts';
 import { useGetCsvData } from '../api/useGetCsvData';
 import { Checkbox, Select } from 'antd';
@@ -76,46 +74,26 @@ function getGraphData(dataFromCsv, selectedDay, selectedSkills) {
 
 function WorkerRequirementsChart() {
   const { data, isLoading: loading } = useGetShifts();
-  const { csvData = {}} = useGetCsvData(); // { employeeSkill, workerRequirements, shiftBasket } 
+  const { csvData = {} } = useGetCsvData(); // { employeeSkill, workerRequirements, shiftBasket } 
   const { workerRequirements: workerRequirementsData } = csvData;
   const placementData = data?.data;
 
-  console.log("placementData", placementData)
+  
   const chartContainerRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const [selectedDay, setSelectedDay] = useState('Sunday');
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [allSkills, setAllSkills] = useState([]);
 
-
   useEffect(() => {
     if (placementData && placementData.length > 0) {
       const filteredSkills = [...new Set(placementData.filter(row => row.day === selectedDay).map(row => row.skill))];
       setAllSkills(filteredSkills);
       if (filteredSkills && filteredSkills.length > 0) {
-        setSelectedSkills([filteredSkills[0]])
+        setSelectedSkills(filteredSkills)
       }
     }
   }, [placementData, selectedDay]);
-
-  // Watch for changes in selectedDay
-  const handleDayChange = (event) => {
-    setSelectedDay(event.target.value);
-  };
-
-  // Watch for changes in selected skills
-  const handleSkillChange = (e) => {
-    const { value, checked } = e.target;
-
-    if (checked) {
-        // Add the skill to selectedSkills if checked
-        setSelectedSkills((prevSkills) => [...prevSkills, value]);
-    } else {
-        // Remove the skill from selectedSkills if unchecked
-        setSelectedSkills((prevSkills) => prevSkills.filter((skill) => skill !== value));
-    }
-};
-
 
   useEffect(() => {
     if (selectedSkills && workerRequirementsData && placementData && workerRequirementsData.length > 0 && placementData.length > 0) {
@@ -173,7 +151,7 @@ function WorkerRequirementsChart() {
       }
     });
   };
-  
+
   return (
     <div>
       <h1>Worker Requirements Chart</h1>
@@ -183,18 +161,18 @@ function WorkerRequirementsChart() {
           value={selectedDay}
           style={{ width: 120 }}
           onChange={setSelectedDay}
-          options={DAYS_OF_WEEK.map((v)=> ({ value: v, label: v}))}
+          options={DAYS_OF_WEEK.map((v) => ({ value: v, label: v }))}
         />
 
       </div>
-      <div style={{ padding: '10px 0px'}}>
+      <div style={{ padding: '10px 0px' }}>
         <p htmlFor="skills"><b>Select Skills: </b></p>
-        <Checkbox.Group value={selectedSkills} options={allSkills.map((i)=> ({ label: i, value: i}))} defaultValue={['Apple']} onChange={setSelectedSkills} />
+        <Checkbox.Group value={selectedSkills} options={allSkills.map((i) => ({ label: i, value: i }))} defaultValue={['Apple']} onChange={setSelectedSkills} />
       </div>
       <canvas ref={chartContainerRef} id="worker-requirements-chart" width="800" height="400"></canvas>
     </div>
   );
-  
+
 }
 
 export default WorkerRequirementsChart;

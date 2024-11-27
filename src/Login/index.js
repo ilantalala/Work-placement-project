@@ -1,8 +1,8 @@
-import React , { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Card, Typography, Input, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { UserOutlined, KeyOutlined } from '@ant-design/icons';
-import {useLogin} from '../api/useLogin';
+import { useLogin } from '../api/useLogin';
 
 import './style.css';
 
@@ -17,64 +17,58 @@ export const Login = () => {
 
     const { mutate, isError, isPending } = useLogin({
         onError: (error) => {
-          console.error('Error logging in:', error);
-          setErrorMessage(error?.response?.data?.error || 'An error occurred while logging in. Please try again.');
+            console.error('Error logging in:', error);
+            setErrorMessage(error?.response?.data?.error || 'An error occurred while logging in. Please try again.');
         }
-      });
+    });
 
-    
-    
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!username || !password) {
-          return setErrorMessage('Please fill all fields.');
-        } 
+            return setErrorMessage('Please fill all fields.');
+        }
         mutate({ username, password });
     };
 
     return (
         <Layout className="login">
             <Content className='login-content'>
-                <Card 
+                <Card
                     rootClassName='login-card'
                     className="card-content"
-                    bordered={false} 
-                    bodyStyle={{ display: 'flex', alignItems: 'center', flexDirection: 'column', gap: '42px' }} 
+                    bordered={false}
+                    bodyStyle={{ display: 'flex', alignItems: 'center', flexDirection: 'column', gap: '42px' }}
                 >
                     <Title level={1}>Login</Title>
-
                     <div className="card-inputs">
-                        <Input 
-                            value={username} 
-                            onChange={(e)=> setUsername(e.target.value)} 
-                            status={isError ? "error": null} 
-                            size="large" 
-                            placeholder="Username" 
+                        <Input
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            status={isError ? "error" : null}
+                            size="large"
+                            placeholder="Username"
                             prefix={<UserOutlined />}
                         />
-                        <Input.Password 
-                            value={password} 
-                            onChange={(e)=> setPassword(e.target.value)} 
-                            status={isError ? "error": null} 
-                            size="large" 
-                            placeholder="Password" 
+                        <Input.Password
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            status={isError ? "error" : null}
+                            size="large"
+                            placeholder="Password"
                             prefix={<KeyOutlined />}
                         />
                     </div>
-
                     <Button block loading={isPending} type="submit" color="primary" size="large" variant="solid" onClick={handleSubmit} >
                         Login
                     </Button>
-
                     {errorMessage && <Text type="danger">{errorMessage}</Text>}
-
                     <div>
-                        <Text> 
+                        <Text>
                             Don't have an account? <Link onClick={() => navigate('/register')}> Sign up </Link>
                         </Text>
                     </div>
-
-
                 </Card>
             </Content>
         </Layout>
