@@ -76,6 +76,7 @@ def create_schedule(identifier):
     try:
         data = request.json
         schedule_date = data.get('date')
+        prioritize = data.get('prioritize')
 
         if not schedule_date:
             return jsonify({"error": "Missing date"}), 400
@@ -106,9 +107,11 @@ def create_schedule(identifier):
             optimized_shifts = pd.DataFrame(shifts_doc['data'])
             
             # Run second placement algorithm
-            final_schedule_df = assign_employees_to_shifts(
-                employee_skills_df,
-                optimized_shifts
+            # If prioritize is True, we will use the basic algorithm, otherwise we will use KPI1
+            final_schedule_df = (
+                assign_employees_to_shifts(employee_skills_df, optimized_shifts)
+                if prioritize
+                else assign_employees_to_shifts_KPI1(employee_skills_df, optimized_shifts)
             )
 
             # Convert the final schedule to records
@@ -144,6 +147,7 @@ def create_schedule(identifier):
             schedule_model = Schedule()
             new_schedule = schedule_model.add_schedule(identifier, schedule_date, schedule_data)
             
+            print("DAVIDAVID", prioritize)
             if new_schedule:
                 new_schedule['_id'] = str(new_schedule['_id'])
                 return jsonify(new_schedule), 200

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "antd";
-import { AddCSVFileButton } from "./AddCSVFile";
+import { AddCSVFileButton } from "./AddCSVFileButton";
 import { DownloadOutlined } from '@ant-design/icons';
 
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
@@ -15,7 +15,7 @@ export const AddFilesModal = ({ setCsvData }) => {
 
   return (
     <>
-      <Button style={{margin: '24px'}} onClick={() => setIsOpen(true)} type="primary" shape="round" icon={<DownloadOutlined />} size={"large"}>
+      <Button style={{ margin: '24px' }} onClick={() => setIsOpen(true)} type="primary" shape="round" icon={<DownloadOutlined />} size={"large"}>
         Add All files at once
       </Button>
 

@@ -6,36 +6,29 @@ import {
   SmileFilled
 } from '@ant-design/icons';
 import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
-import { Layout, Menu, theme } from 'antd';
+import { Layout, Menu } from 'antd';
 import { CalendarTwoTone} from '@ant-design/icons';
 import { Login } from './Login';
 import { Profile } from './Profile';
 import { Register } from './Register';
-import PlacementTable from './PlacementTable/PlacementTable';
+import ShiftsView from './ShiftsView/ShiftsView';
 import WorkerRequirementsChart from './WorkerRequirementsChart/WorkerRequirementsChart';
-import { FileManager } from './InputCsv/FileManager';
+import { FileManager } from './FileManager/FileManager';
 import { ViewSchedule } from './Schedule/ViewSchedule';
 import { useAppContext } from './context/AppContext';
 
 const { Sider } = Layout;
-function getItem(label, key, icon, children) {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  };
-}
+
+const getItem = (label, key, icon, children) => ({ key, icon, children, label });
 
 const items = [
   getItem('Shifts', 'sub1', <PieChartOutlined />, [
     getItem('Create new', '/'),
-    getItem('Edit existing', '/placement-table'),
+    getItem('Edit existing', '/shifts-view'),
     getItem('View chart', '/worker-requirements-chart'),
-  ]),
+  ]), // { key: 'sub1', icon: <PieChartOutlined />, children: [ ... ] }
   getItem('View schedule', '/schedule', <TeamOutlined />),
   getItem('Logout', '/logout', <UserOutlined />),
-
 ];
 
 export const AppLayout = () => {
@@ -43,11 +36,8 @@ export const AppLayout = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { currentUser, logout } = useAppContext();
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
 
-  const onMenuClick = ({ item, key, keyPath, domEvent }) => {
+  const onMenuClick = ({ key }) => {
     if (key === '/logout') {
       return logout();
     }
@@ -55,9 +45,13 @@ export const AppLayout = () => {
   }
 
   const menuItems = useMemo(()=> {
-    return [getItem(`Welcome, ${currentUser}!`, '/profile', <SmileFilled />), ...items]
+    return [
+      getItem(`Welcome, ${currentUser}!`, '/profile', <SmileFilled />),
+       ...items
+    ]
   }, [currentUser])
 
+  // If the user is not logged in
   if (!currentUser) {
     return (
     <Routes>
@@ -66,27 +60,34 @@ export const AppLayout = () => {
     </Routes>
     );
   }
+
+  const logoStyle = { display: 'flex', gap: '12px', padding: '8px', color: 'white', fontSize: "22px",  fontFamily: 'serif', alignItems: 'center', justifyContent: collapsed ? 'center' : 'flexStart'};
+  //  If the user is logged in (if there's a curentUser)
   return (
-    <Layout
-      style={{
-        minHeight: '100vh',
-      }}
-    >
+    <Layout style={{ minHeight: '100vh' }} >
       <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-        <div style={{ display: 'flex', gap: '12px', padding: '8px', color: 'white', fontSize: "22px",  fontFamily: 'serif', alignItems: 'center'}}>
+        <div style={logoStyle}>
           <CalendarTwoTone  color="red" twoToneColor="#5a54f9" style={{ fontSize: "32px" , }} />
-          ShiftAssign
+          {!collapsed &&  "ShiftAssign"}
         </div>
-        <Menu theme="dark" selectedKeys={[pathname]} defaultSelectedKeys={['/']} mode="inline" onClick={onMenuClick} items={menuItems} />
+        <Menu 
+          theme="dark" 
+          selectedKeys={[pathname]} 
+          defaultSelectedKeys={['/']} 
+          mode="inline" 
+          onClick={onMenuClick} 
+          items={menuItems}
+        />
 
       </Sider>
-      <Layout style={{ padding: '16px'}}>
+      <Layout style={{ padding: '16px'}}> 
         <Routes>
             <Route path="/" element={<FileManager />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/schedule" element={<ViewSchedule />} />
-            <Route path="/placement-table" element={<PlacementTable />} />
+            <Route path="/shifts-view" element={<ShiftsView />} />
             <Route path="/worker-requirements-chart" element={<WorkerRequirementsChart />} />
+            <Route path="/schedule" element={<ViewSchedule />} />
+            <Route path="*" element={<div>404 page not found</div>} />
         </Routes>
       </Layout>
     </Layout>
