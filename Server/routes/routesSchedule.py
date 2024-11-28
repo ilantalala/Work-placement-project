@@ -8,9 +8,7 @@ routes_schedule= Blueprint('routes_schedule', __name__)
 # Define routes
 @routes_schedule.route('/api/<identifier>/schedule', methods=['GET'])
 def get_user_schedules(identifier):
-     print("GET-SCHEDULE_ROUTE")
      res = get_schedules(identifier)
-     print ("davidos", res, type(res))
      return res
 
 @routes_schedule.route('/api/<identifier>/schedule', methods=['POST'])

@@ -1,13 +1,11 @@
 #logicFiles.py
-import math
 import uuid
 import pandas as pd
 from flask import jsonify, request
-from datetime import datetime, timedelta
 from models.files_model import Files
 from models.shifts_model import Shifts
 from first_placement_basic import optimize_shifts  
-
+# removing the /r from the keys and values of data
 def polish(data):
     def remove_r(text):
         return text.replace("\r", "")
@@ -22,30 +20,6 @@ def polish(data):
         polished_data.append(polished_item)
     return polished_data
 
-def filter_schedules_by_time(schedules, skill, day, start, end):
-    filtered_schedules = []
-
-    time_format = "%H:%M"  # Define the time format
-    for schedule in schedules:
-        schedule_skill = schedule["skill"]
-        schedule_day = schedule["day"]
-        schedule_start = schedule["start_time"]
-        schedule_end = schedule["end_time"]
-
-        time_start = datetime.strptime(schedule_start, time_format).time()
-        time_end = datetime.strptime(schedule_end, time_format).time()
-
-        start_time = datetime.strptime(start, time_format).time()
-        end_time = datetime.strptime(end, time_format).time()
-        if (
-                schedule_skill == skill
-                and schedule_day == day
-                and start_time <= time_start <= end_time
-                and start_time <= time_end <= end_time
-        ):
-            filtered_schedules.append(schedule)
-
-    return filtered_schedules
 def process_csv_content(csv_content):
     try:
         lines = csv_content.strip().split('\n')
@@ -55,7 +29,7 @@ def process_csv_content(csv_content):
         for line in lines[1:]:
             values = [value.strip() for value in line.split(',')]
             entry = {headers[i]: values[i] for i in range(len(headers))}
-            entry['_id'] = str(uuid.uuid4())
+            entry['_id'] = str(uuid.uuid4()) #creating unique id to each entry
             data.append(entry)
 
         return data
@@ -111,7 +85,6 @@ def upload_data():
                     if '_id' in shift:
                         del shift['_id']
                 
-                print("final_table_list:\n", final_table_list)
                 
                 # Insert the result
                 shift = Shifts()

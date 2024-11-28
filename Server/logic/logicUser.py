@@ -52,19 +52,6 @@ def login():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-def verify_token():
-    try:
-        token = request.headers.get('Authorization')
-
-        if not token:
-            return jsonify({'error': 'Token is missing'}), 401
-
-        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-        return jsonify({'message': 'Token is valid', 'username': decoded_token.get('username')}), 200
-    except jwt.ExpiredSignatureError:
-        return jsonify({'error': 'Token has expired'}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({'error': 'Invalid token'}), 401
 
 def get_user_by_name(username):
     try: 

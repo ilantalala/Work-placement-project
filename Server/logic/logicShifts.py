@@ -17,7 +17,7 @@ def get_shifts(identifier):
 def update_shifts(identifier):
     try:
         data = request.json
-        ##THE GET METHOD IS NOT
+       
         new_shifts = data.get('data')
 
         shift = Shifts()

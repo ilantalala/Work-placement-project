@@ -8,19 +8,6 @@ from datetime import datetime
 from second_placement_basic import assign_employees_to_shifts
 from second_placement_KPI1 import assign_employees_to_shifts_KPI1
 
-def polish_employee_skills(employee_skills_data):
-    """Polish employee skills data to match required format"""
-    polished_data = []
-    for employee in employee_skills_data:
-        polished_employee = {
-            'name': employee.get('name', '').strip(),
-            'skill1': employee.get('skill1', '').strip(),
-            'skill2': employee.get('skill2', '').strip(),
-            'skill3': employee.get('skill3', '').strip()
-        }
-        polished_data.append(polished_employee)
-    return polished_data
-
 def get_schedules(identifier):
     try:
         schedules_cursor = Schedule().get_user_schedule(identifier)
@@ -29,7 +16,7 @@ def get_schedules(identifier):
         for schedule in schedules_list:
             if '_id' in schedule:
                 schedule['_id'] = str(schedule['_id'])
-
+        print("schedules_list: ",schedules_list)
         return jsonify(schedules_list), 200
     except Exception as e:
         print("Error while getting schedules:", e)
@@ -37,8 +24,6 @@ def get_schedules(identifier):
 
 def process_employee_data(raw_data):
     """Process and validate employee data"""
-    print("DEBUG: Raw employee data sample:", raw_data[:2])
-    
     cleaned_data = []
     for employee in raw_data:
         # Create standardized employee record
@@ -56,9 +41,6 @@ def process_employee_data(raw_data):
             cleaned_employee['skill3']
         ]):
             cleaned_data.append(cleaned_employee)
-
-    print("DEBUG: Cleaned employee data sample:", cleaned_data[:2])
-    print(f"DEBUG: Processed {len(cleaned_data)} valid employees")
     
     if not cleaned_data:
         print("DEBUG: Employee data mapping:")
@@ -109,9 +91,9 @@ def create_schedule(identifier):
             # Run second placement algorithm
             # If prioritize is True, we will use the basic algorithm, otherwise we will use KPI1
             final_schedule_df = (
-                assign_employees_to_shifts(employee_skills_df, optimized_shifts)
+                assign_employees_to_shifts_KPI1(employee_skills_df, optimized_shifts)
                 if prioritize
-                else assign_employees_to_shifts_KPI1(employee_skills_df, optimized_shifts)
+                else assign_employees_to_shifts(employee_skills_df, optimized_shifts)
             )
 
             # Convert the final schedule to records
@@ -136,18 +118,12 @@ def create_schedule(identifier):
                 'shifts': shifts_doc['data'],
                 'schedule': schedule,
                 'date_range': schedule_date,
-                'meta': {
-                    'total_shifts': len(schedule),
-                    'total_employees': len(employee_skills_data),
-                    'last_updated': datetime.utcnow().isoformat()
-                }
             }
 
             # Save to database
             schedule_model = Schedule()
             new_schedule = schedule_model.add_schedule(identifier, schedule_date, schedule_data)
             
-            print("DAVIDAVID", prioritize)
             if new_schedule:
                 new_schedule['_id'] = str(new_schedule['_id'])
                 return jsonify(new_schedule), 200

@@ -1,4 +1,3 @@
-import datetime
 import pandas as pd
 from bson import ObjectId
 from flask import Flask
@@ -16,6 +15,7 @@ class Schedule(BaseModel):
     def get_user_schedule(self, currentUser):
         try:
             schedule = self.get_schedule_collection()
+           
             return schedule.find({'identifier': currentUser})
         except Exception as e:
             print(f"Error finding schedule: {e}")
@@ -74,8 +74,7 @@ class Schedule(BaseModel):
                     '$set': {
                         'employee_skill': schedule_data['employee_skill'],
                         'shifts': schedule_data['shifts'],
-                        'schedule': schedule_data['schedule'],
-                        'meta': schedule_data.get('meta', {})
+                        'schedule': schedule_data['schedule']
                     }
                 },
                 upsert=True

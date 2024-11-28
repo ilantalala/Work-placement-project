@@ -26,7 +26,7 @@ def optimize_shifts(table2_df, table3_df):
 
     # Define fines for overstaffing and understaffing
     overstaffing_fine_factor = 10
-    understaffing_fine_factor = 20
+    understaffing_fine_factor = 10
 
     def time_to_minutes(time_str):
         hours, minutes = map(int, time_str.split(':'))
@@ -91,15 +91,6 @@ def optimize_shifts(table2_df, table3_df):
     table3_df['number_of_employee'] = [int(num_employees[i].varValue) if num_employees[i].varValue is not None else 0 
                                       for i in range(len(table3_df))]
     
-    # Create a dictionary to store overstaffing and understaffing information
-    staffing_info = {
-        (day, skill, time): {
-            'overstaffing': overstaffing[(day, skill, time)].varValue,
-            'understaffing': understaffing[(day, skill, time)].varValue
-        }
-        for day in set(table3_df['day'])
-        for skill in set(table3_df['skill'])
-        for time in range(min_start_time, max_end_time, 30)
-    }
+
    
     return table3_df, LpStatus[prob.status], value(prob.objective)
