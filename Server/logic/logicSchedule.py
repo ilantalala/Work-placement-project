@@ -142,7 +142,7 @@ def create_schedule(identifier):
         import traceback
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
-def update_shifts(identifier, scheduleId, shiftId):
+def update_shifts(scheduleId, shiftId):
     # ["emily", "john", "jane", "Unfilled", "Unfilled"]
     # will accept scheduleId, shiftId, and employees list. 
     # we need to update the employees list for the given shiftId in the given scheduleId
