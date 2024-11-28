@@ -29,7 +29,7 @@ export const CreateScheduleModal = ({ children, currentUser }) => {
     mutationFn: ({ startTime, endTime }) => axiosInstance.post(`/${currentUser}/schedule`, { date: [startTime, endTime], prioritize: checked }),
     onSuccess: (_, { startTime, endTime }) => {
       // The user can see the newly created schedule
-      navigate(`/schedule?date=${new Date(startTime).toLocaleDateString()}`);
+      navigate(`/schedule?date=${new Date(startTime).toLocaleDateString("en-US")}`);
     },
     onError: () => {
       alert("Failed to create schedule. try again.");
