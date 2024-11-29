@@ -5,8 +5,8 @@ from models.files_model import Files
 from models.shifts_model import Shifts
 import pandas as pd
 from datetime import datetime
-from second_placement_basic import assign_employees_to_shifts
-from second_placement_KPI1 import assign_employees_to_shifts_KPI1
+from schedule_algorithm_basic import assign_employees_to_shifts
+from schedule_algorithm_balanced_shifts import assign_employees_to_shifts_balanced
 
 def get_schedules(identifier):
     try:
@@ -16,7 +16,6 @@ def get_schedules(identifier):
         for schedule in schedules_list:
             if '_id' in schedule:
                 schedule['_id'] = str(schedule['_id'])
-        print("schedules_list: ",schedules_list)
         return jsonify(schedules_list), 200
     except Exception as e:
         print("Error while getting schedules:", e)
@@ -89,9 +88,9 @@ def create_schedule(identifier):
             optimized_shifts = pd.DataFrame(shifts_doc['data'])
             
             # Run second placement algorithm
-            # If prioritize is True, we will use the basic algorithm, otherwise we will use KPI1
+            # If prioritize is False, we will use the basic algorithm, otherwise the balanced algorithm
             final_schedule_df = (
-                assign_employees_to_shifts_KPI1(employee_skills_df, optimized_shifts)
+                assign_employees_to_shifts_balanced(employee_skills_df, optimized_shifts)
                 if prioritize
                 else assign_employees_to_shifts(employee_skills_df, optimized_shifts)
             )

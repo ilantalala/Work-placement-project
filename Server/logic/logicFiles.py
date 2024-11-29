@@ -4,7 +4,7 @@ import pandas as pd
 from flask import jsonify, request
 from models.files_model import Files
 from models.shifts_model import Shifts
-from first_placement_basic import optimize_shifts  
+from optimized_shift_algorithm import optimize_shifts  
 # removing the /r from the keys and values of data
 def polish(data):
     def remove_r(text):

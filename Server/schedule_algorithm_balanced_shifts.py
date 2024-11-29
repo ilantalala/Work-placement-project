@@ -1,4 +1,4 @@
-# second_placement_basic.py
+# schedule_algorithm_balanced_shifts.py
 import pandas as pd
 from collections import defaultdict
 from datetime import datetime, time
@@ -8,7 +8,7 @@ def is_late_shift(end_time):
     shift_end = datetime.strptime(end_time, '%H:%M').time()
     return shift_end >= time(18, 0)
 
-def assign_employees_to_shifts_KPI1(employee_skills_data, optimized_shifts):
+def assign_employees_to_shifts_balanced(employee_skills_data, optimized_shifts):
     try:
         # Previous data preprocessing remains the same...
         if isinstance(employee_skills_data, list):
