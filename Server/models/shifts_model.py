@@ -53,3 +53,12 @@ class Shifts(BaseModel):
         except Exception as e:
             print(f"Error updating shifts: {e}")
             return None
+
+    def delete_user_shifts(self, currentUser):
+        try:
+            shifts_collection = self.get_shifts_collection()
+            result = shifts_collection.delete_one({'identifier': currentUser})
+            return result.deleted_count == 1
+        except Exception as e:
+            print(f"Error deleting shifts: {e}")
+            return False

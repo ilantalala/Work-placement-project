@@ -15,14 +15,16 @@ export const AppProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
 
   const logout = () => {
+    localStorage.removeItem('token');
     localStorage.removeItem('username');
     navigate('/')
     setCurrentUser(null);
   }
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
-    if (username) {
+    if (token && username) {
       setCurrentUser(username);
     }
   }, [])

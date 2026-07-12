@@ -2,12 +2,10 @@ import { Button, notification } from "antd";
 import { useNavigate } from "react-router-dom";
 import Papa from "papaparse";
 import { UploadOutlined } from '@ant-design/icons';
-import { useAppContext } from "../context/AppContext";
 import { requiredHeaders } from "./headers";
 import { useUploadCsv } from "../api/useUploadCsv";
 
 export const UploadFilesToServer = ({ csvData }) => {
-  const { currentUser } = useAppContext();
   const [customAlert, contextHolder] = notification.useNotification();
   const navigate = useNavigate();
   const { mutate } = useUploadCsv({
@@ -29,7 +27,6 @@ export const UploadFilesToServer = ({ csvData }) => {
       const shiftBasketContent = Papa.unparse({ fields: requiredHeaders.shiftBasket, data: csvData.shiftBasket });
 
       mutate({
-        currentUser,
         employeeSkillContent,
         workerRequirementsContent,
         shiftBasketContent,

@@ -2,20 +2,29 @@
 
 from flask import Blueprint
 
-from logic.logicUser import register, login, get_user_by_name
+from auth.decorators import token_required
+from logic.logicUser import get_current_user, login, register, update_current_user
 
-# Create a Blueprint for routes
 routes_user = Blueprint('routes_user', __name__)
 
-# Define routes
+
 @routes_user.route('/api/register', methods=['POST'])
 def register_route():
-     return register()
+    return register()
+
 
 @routes_user.route('/api/login', methods=['POST'])
 def login_route():
-     return login()
+    return login()
 
-@routes_user.route('/api/user/<username>', methods=['GET'])
-def get_user(username):
-     return get_user_by_name(username)
+
+@routes_user.route('/api/user/me', methods=['GET'])
+@token_required
+def get_current_user_route():
+    return get_current_user()
+
+
+@routes_user.route('/api/user/me', methods=['PUT'])
+@token_required
+def update_current_user_route():
+    return update_current_user()

@@ -38,3 +38,17 @@ class User(BaseModel):
         except Exception as e:
             print(f"Error finding user: {e}")
             return None
+
+    def update_user(self, username, fields):
+        try:
+            users = self.get_users_collection()
+            if 'password' in fields:
+                fields['password'] = generate_password_hash(fields['password'])
+            result = users.update_one(
+                {'username': username},
+                {'$set': fields}
+            )
+            return result.matched_count == 1
+        except Exception as e:
+            print(f"Error updating user: {e}")
+            return False

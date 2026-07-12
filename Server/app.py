@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_cors import CORS
 from models import mongo
@@ -17,6 +19,7 @@ app = Flask(__name__)
 
 # Configure MongoDB URI
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/Placement'
+app.config['JWT_SECRET'] = os.environ.get('JWT_SECRET', 'dev-secret-change-me')
 
 # Initialize PyMongo
 mongo.init_app(app)

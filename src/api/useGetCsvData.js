@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useAppContext } from '../context/AppContext';
 import { axiosInstance} from './axios';
 
-const fetchInitialCsvData = async (currentUser) => {
-  const response = await axiosInstance.get(`/${currentUser}/get_initial_data`) 
+const fetchInitialCsvData = async () => {
+  const response = await axiosInstance.get(`/files`)
   const data = response.data;
     const employeeSkill = data.find((item)=> item.type === 'employee_skill')?.data;
     const workerRequirements = data.find((item)=> item.type === 'worker_requirements')?.data;
@@ -18,9 +18,9 @@ export const useGetCsvData = () => {
  const { currentUser } = useAppContext();
  const { data }= useQuery({
     queryKey: ['csvData', currentUser],
-    queryFn: () => fetchInitialCsvData(currentUser),
-    refetchOnWindowFocus: false, // Do not refetch when window is focused
-    enabled: !!currentUser, // Only fetch data when enabled is true -> turn currentUser to boolean,
+    queryFn: fetchInitialCsvData,
+    refetchOnWindowFocus: false,
+    enabled: !!currentUser,
   });
 
   useEffect(()=> {
@@ -29,6 +29,3 @@ export const useGetCsvData = () => {
 
   return { csvData, setCsvData }
 };
-
-
-

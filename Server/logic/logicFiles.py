@@ -1,52 +1,29 @@
 #logicFiles.py
+import io
 import uuid
 import pandas as pd
-from flask import jsonify, request
+from flask import g, jsonify, request
 from models.files_model import Files
 from models.shifts_model import Shifts
-from optimized_shift_algorithm import optimize_shifts  
-# removing the /r from the keys and values of data
-def polish(data):
-    def remove_r(text):
-        return text.replace("\r", "")
+from optimized_shift_algorithm import optimize_shifts
 
-    polished_data = []
-    for item in data:
-        polished_item = {}
-        for key, value in item.items():
-            polished_key = remove_r(key)
-            polished_value = remove_r(value)
-            polished_item[polished_key] = polished_value
-        polished_data.append(polished_item)
-    return polished_data
 
-def process_csv_content(csv_content):
+def parse_csv_content(csv_content):
     try:
-        lines = csv_content.strip().split('\n')
-        headers = [header.strip() for header in lines[0].split(',')]
-        
-        data = []
-        for line in lines[1:]:
-            values = [value.strip() for value in line.split(',')]
-            entry = {headers[i]: values[i] for i in range(len(headers))}
-            entry['_id'] = str(uuid.uuid4()) #creating unique id to each entry
-            data.append(entry)
-
-        return data
-
+        df = pd.read_csv(io.StringIO(csv_content))
+        df['_id'] = [str(uuid.uuid4()) for _ in range(len(df))]
+        return df.to_dict('records')
     except Exception as e:
         print("Error processing CSV content:", e)
         return []
 
+
 def upload_data():
     try:
         files = Files()
-
-        # Get JSON data from the request
         data = request.get_json()
+        current_user = g.current_user
 
-        # Access data fields and process them
-        currentUser = data.get('currentUser')
         employee_skill_content = data.get('employeeSkillContent')
         worker_requirements_content = data.get('workerRequirementsContent')
         shift_basket_content = data.get('shiftBasketContent')
@@ -54,41 +31,28 @@ def upload_data():
         if None in [employee_skill_content, worker_requirements_content, shift_basket_content]:
             return jsonify({"error": "Missing required data in the request"}), 400
 
-        # Process CSV-like content and create arrays of JSON objects
-        employee_skill_data = process_csv_content(employee_skill_content)
-        worker_requirements_data = process_csv_content(worker_requirements_content)
-        shift_basket_data = process_csv_content(shift_basket_content)
+        employee_skill_data = parse_csv_content(employee_skill_content)
+        worker_requirements_data = parse_csv_content(worker_requirements_content)
+        shift_basket_data = parse_csv_content(shift_basket_content)
 
-        # Polish the data
-        employee_skill_data = polish(employee_skill_data)
-        worker_requirements_data = polish(worker_requirements_data)
-        shift_basket_data = polish(shift_basket_data)
-
-        # Save data to MongoDB
-        if files.add_files(currentUser, employee_skill_data, worker_requirements_data, shift_basket_data):
+        if files.add_files(current_user, employee_skill_data, worker_requirements_data, shift_basket_data):
             print('Files saved successfully')
-            
+
             try:
-                # Convert to pandas DataFrames
                 worker_requirements_df = pd.DataFrame(worker_requirements_data)
                 shift_basket_df = pd.DataFrame(shift_basket_data)
 
-                # Convert necessary columns to numeric
                 worker_requirements_df['number_of_employ'] = pd.to_numeric(worker_requirements_df['number_of_employ'])
-                
-                # Get optimized shifts
+
                 final_table, status, objective = optimize_shifts(worker_requirements_df, shift_basket_df)
-                
-                # Convert DataFrame to list and remove '_id' field
+
                 final_table_list = final_table.to_dict('records')
                 for shift in final_table_list:
                     if '_id' in shift:
                         del shift['_id']
-                
-                
-                # Insert the result
+
                 shift = Shifts()
-                shift.add_shifts(currentUser, final_table_list)
+                shift.add_shifts(current_user, final_table_list)
 
                 return jsonify({
                     'message': 'Files saved successfully',
@@ -115,12 +79,23 @@ def upload_data():
             'error': f'Upload error: {str(e)}'
         }), 500
 
-def get_initial_data(identifier):
+
+def get_initial_data():
     try:
         files = Files()
-        # Get data from MongoDB
-        files_list = files.get_user_files(identifier)
+        files_list = files.get_user_files(g.current_user)
         return jsonify(files_list), 200
     except Exception as e:
         print("Error details:", e)
+        return jsonify({"error": str(e)}), 500
+
+
+def delete_files():
+    try:
+        files = Files()
+        if files.delete_user_files(g.current_user):
+            return jsonify({"message": "Files deleted successfully"}), 200
+        return jsonify({"error": "No files found to delete"}), 404
+    except Exception as e:
+        print("Error deleting files:", e)
         return jsonify({"error": str(e)}), 500

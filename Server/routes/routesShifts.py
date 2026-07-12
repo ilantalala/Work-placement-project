@@ -2,16 +2,25 @@
 
 from flask import Blueprint
 
-from logic.logicShifts import get_shifts, update_shifts
+from auth.decorators import token_required
+from logic.logicShifts import delete_shifts, get_shifts, update_shifts
 
-# Create a Blueprint for routes
-routes_shifts= Blueprint('routes_shifts', __name__)
+routes_shifts = Blueprint('routes_shifts', __name__)
 
-# Define routes
-@routes_shifts.route('/api/<identifier>/shifts', methods=['GET'])
-def get_user_shifts(identifier):
-     return get_shifts(identifier)
 
-@routes_shifts.route('/api/<identifier>/shifts', methods=['PUT'])
-def update_user_shifts(identifier):
-     return update_shifts(identifier)
+@routes_shifts.route('/api/shifts', methods=['GET'])
+@token_required
+def get_user_shifts():
+    return get_shifts()
+
+
+@routes_shifts.route('/api/shifts', methods=['PUT'])
+@token_required
+def update_user_shifts():
+    return update_shifts()
+
+
+@routes_shifts.route('/api/shifts', methods=['DELETE'])
+@token_required
+def delete_user_shifts():
+    return delete_shifts()

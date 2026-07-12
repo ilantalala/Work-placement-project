@@ -1,10 +1,10 @@
 #logicUser.py
-from flask import jsonify, request
-from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
+from flask import g, jsonify, request
+from werkzeug.security import check_password_hash
+
+from auth.jwt_utils import generate_token
 from models.user_model import User
 
-SECRET_KEY = 'hiiihiiiii'
 
 def register():
     try:
@@ -14,24 +14,21 @@ def register():
         companyName = data.get('companyName')
         displayName = data.get('displayName')
 
-
-        # Validate required fields
         if not username or not password or not companyName:
             return jsonify({'error': 'Username, password, and company name are required'}), 400
 
         user = User()
 
-        # Check if the user already exists
         if user.find_user(username):
-            return jsonify({'error': 'Username already exists'}), 409  # HTTP 409 Conflict
+            return jsonify({'error': 'Username already exists'}), 409
 
-        # Create user if the username does not exist
         if user.create_user(username, password, companyName, displayName):
             return jsonify({'message': 'User registered successfully'}), 201
         else:
             return jsonify({'error': 'Failed to register user'}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 def login():
     try:
@@ -46,19 +43,54 @@ def login():
         user_data = user.find_user(username)
 
         if user_data and check_password_hash(user_data.get('password'), password):
-            return jsonify({'message': 'Login successful'}), 200
+            return jsonify({
+                'message': 'Login successful',
+                'token': generate_token(username),
+                'username': username,
+            }), 200
         else:
             return jsonify({'error': 'Invalid username or password'}), 401
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
-def get_user_by_name(username):
-    try: 
+def get_current_user():
+    try:
         user = User()
-        user_data = user.find_user_by_name(username)
-        user_data['_id'] = str(user_data['_id'])
+        user_data = user.find_user_by_name(g.current_user)
+        if not user_data:
+            return jsonify({'error': 'User not found'}), 404
 
+        user_data['_id'] = str(user_data['_id'])
+        del user_data['password']
         return jsonify(user_data), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+def update_current_user():
+    try:
+        data = request.json
+        field_map = {
+            'displayName': 'display_name',
+            'companyName': 'company_name',
+            'password': 'password',
+        }
+        fields_to_update = {
+            field_map[k]: v
+            for k, v in data.items()
+            if k in field_map and v
+        }
+
+        if not fields_to_update:
+            return jsonify({'error': 'No valid fields to update'}), 400
+
+        user = User()
+        if user.update_user(g.current_user, fields_to_update):
+            updated_user = user.find_user_by_name(g.current_user)
+            updated_user['_id'] = str(updated_user['_id'])
+            del updated_user['password']
+            return jsonify({'message': 'User updated successfully', 'user': updated_user}), 200
+        return jsonify({'error': 'Failed to update user'}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500

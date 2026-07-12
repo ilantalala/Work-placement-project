@@ -3,17 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 import { axiosInstance} from './axios';
 import { useAppContext } from '../context/AppContext';
 
-const fetchSchedule = async (currentUser) => {
-  const response = await axiosInstance.get(`${currentUser}/schedule`) 
-  return response.data; 
+const fetchSchedule = async () => {
+  const response = await axiosInstance.get(`/schedule`)
+  return response.data;
 };
 
 export const useGetSchedule = () => {
   const { currentUser } = useAppContext();
   return useQuery({
     queryKey: ['schedule'],
-    queryFn: () => fetchSchedule(currentUser),
-    refetchOnWindowFocus: false, // Do not refetch when window is focused
-    enabled: !!currentUser // Only fetch data when enabled is true -> turn currentUser to boolean
+    queryFn: fetchSchedule,
+    refetchOnWindowFocus: false,
+    enabled: !!currentUser
   });
 };

@@ -56,3 +56,12 @@ class Files(BaseModel):
         except Exception as e:
             print(f"Error while finding user files: {e}")
             return None
+
+    def delete_user_files(self, currentUser):
+        try:
+            files = self.get_files_collection()
+            result = files.delete_many({'identifier': currentUser})
+            return result.deleted_count > 0
+        except Exception as e:
+            print(f"Error deleting user files: {e}")
+            return False

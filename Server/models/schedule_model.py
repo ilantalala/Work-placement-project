@@ -93,3 +93,13 @@ class Schedule(BaseModel):
             import traceback
             traceback.print_exc()
             return None
+
+    def delete_schedule(self, schedule_id):
+        try:
+            schedule = self.get_schedule_collection()
+            schedule_id = ObjectId(schedule_id)
+            result = schedule.delete_one({'_id': schedule_id})
+            return result.deleted_count == 1
+        except Exception as e:
+            print(f"Error deleting schedule: {e}")
+            return False

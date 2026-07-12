@@ -27,7 +27,7 @@ const ShiftsView = () => {
     const onSubmitChanges = async () => {
         try {
             const data = rows.map(({ isNew, ...row }) => row);
-            await axiosInstance.put(`/${currentUser}/shifts`, { data });
+            await axiosInstance.put(`/shifts`, { data });
             queryCache.invalidateQueries(['shifts', currentUser]);
             alert("Changes saved successfully.")
         } catch (e) {
@@ -51,7 +51,7 @@ const ShiftsView = () => {
                     <div>
                         <EditableTable rows={rows} setRows={setRows} />
                         <div style={{ padding: '24px', display: 'flex', justifyContent: 'flex-end' }}>
-                            <CreateScheduleModal currentUser={currentUser}>
+                            <CreateScheduleModal>
                                 <Button color="primary" size="large" variant="solid" icon={<PlusOutlined />}> Create Schedule </Button>
                             </CreateScheduleModal>
                         </div>

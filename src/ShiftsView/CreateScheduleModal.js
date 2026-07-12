@@ -22,11 +22,11 @@ function getNextSunday() {
   return nextSunday;
 }
 
-export const CreateScheduleModal = ({ children, currentUser }) => {
+export const CreateScheduleModal = ({ children }) => {
   const [checked, setChecked] = React.useState(false);
   const navigate = useNavigate();
   const { mutate, isPending, isError } = useMutation({
-    mutationFn: ({ startTime, endTime }) => axiosInstance.post(`/${currentUser}/schedule`, { date: [startTime, endTime], prioritize: checked }),
+    mutationFn: ({ startTime, endTime }) => axiosInstance.post(`/schedule`, { date: [startTime, endTime], prioritize: checked }),
     onSuccess: (_, { startTime, endTime }) => {
       // The user can see the newly created schedule
       navigate(`/schedule?date=${new Date(startTime).toLocaleDateString("en-US")}`);
